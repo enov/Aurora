@@ -27,7 +27,7 @@ Aurora is a Kohana module that helps you
 
 Documentation:
 ---------------
-Please hold your breadth...
+Please hold your breath...
 
 
 License
