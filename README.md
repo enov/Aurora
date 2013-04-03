@@ -4,9 +4,14 @@ Aurora
 A kohana module to manually map models to database and expose a REST-like interface
 
 
+Version
+--------
+Aurora 0.1-alpha for Kohana 3.2
+
+
 Description
 ------------
-Aurora is a Kohana 3.2 module that helps you
+Aurora is a Kohana module that helps you
 
 1.  Manually map your models to your database.
 
@@ -20,15 +25,11 @@ Aurora is a Kohana 3.2 module that helps you
     b.  Not fully RESTful. Primaraly aimed at Backbone.js
 
 
-Usage
-------
-Suppose you have a the following Model_Event:
-
-
 Documentation:
 ---------------
-Please head to the WIKI
+Please hold your breadth...
+
 
 License
 --------
-MIT 
+MIT
