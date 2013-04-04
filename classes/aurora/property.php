@@ -1,5 +1,4 @@
 <?php
-
 /**
  * A set of functions to manage the VALUE of the
  * primary key, i.e. ID of your Models.
@@ -12,11 +11,8 @@
  */
 class Aurora_Property
 {
-	const PATTERN_GET = 'get_';
-	const PATTERN_SET = 'set_';
 
-	protected static $cache_getters;
-	protected static $cache_setters;
+	protected static $cache;
 	/**
 	 * Get the list of all public properties
 	 * as well as the getters of your model
@@ -26,17 +22,7 @@ class Aurora_Property
 	 * @return array Returns an array of array('type' => 'property', 'name' => 'address')
 	 */
 	public static function getters($model) {
-		$classname = Aurora_Type::classname($model);
-		if (isset(static::$cache_getters[$classname]))
-			return static::$cache_getters[$classname];
-		// init the $properties array
-		$properties = array();
-		$methods = get_class_methods($model);
-		foreach ($methods as $method) {
-			if (preg_match(static::PATTERN_GET, $method))
-				$properties[] = $method;
-		}
-		return static::$cache_getters[$classname] = array_merge($properties, get_class_vars($classname));
+		return static::properties($model, 'get');
 	}
 	/**
 	 * Get the list of all public properties
@@ -47,80 +33,139 @@ class Aurora_Property
 	 * @return array Returns an array of array('type' => 'property', 'name' => 'address')
 	 */
 	public static function setters($model) {
-
+		return static::properties($model, 'set');
+	}
+	protected static function properties($model, $dir) {
+		if ($dir != 'get' OR $dir != 'set')
+			throw new Kohana_Exception('direction should be either set or get');
+		// get the classname of the model
+		$classname	 = Aurora_Type::classname($model);
+		// test to see if we have it cached
+		if (isset(static::$cache[$dir][$classname]))
+			return static::$cache[$dir][$classname];
+		// init the $properties array
+		$properties	 = array();
+		$pattern	 = "/^{$dir}_/";
+		// Loop over the class methods
+		foreach (get_class_methods($classname) as $method) {
+			$property = preg_replace($pattern, $method, 1, $count);
+			// if preg_replace successful, this is a getter/setter method
+			if ($count) {
+				$properties[$property] = array(
+					'type'	 => 'method',
+					'name'	 => $property,
+				);
+			}
+		}
+		// Loop over the class properties (will override methods)
+		foreach (get_class_vars($classname) as $property) {
+			$properties[$property] = array(
+				'type'	 => 'property',
+				'name'	 => $property,
+			);
+		}
+		// cache and return
+		return static::$cache[$dir][$classname] = $properties;
 	}
 	/**
+	 * Aurora "magic" (LOL) get for models
+	 * taking into account getters
 	 *
+	 * @param Model $model
+	 * @param string $property
+	 * @return mixed
+	 * @throws Kohana_Exception
 	 */
 	public static function get($model, $property) {
-
+		$properties = static::getters($model);
+		if (!array_key_exists($property, $properties))
+			throw new Kohana_Exception('No such property or getter defined in model');
+		// test for type of getter
+		if ($properties[$property][$type] === 'property') {
+			return $model->$property;
+		} else { //if ($properties[$property][$type] === 'method')
+			$method = 'get_' . $property;
+			return $model->$method();
+		}
+	}
+	/**
+	 * Aurora "magic" (LOL again) set for models
+	 * taking into account setters
+	 *
+	 * @param Model $model
+	 * @param string $property
+	 * @param mixed $value
+	 * @return mixed
+	 * @throws Kohana_Exception
+	 */
+	public static function set($model, $property, $value) {
+		$properties = static::setters($model);
+		if (!array_key_exists($property, $properties))
+			throw new Kohana_Exception('No such property or setter defined in model');
+		// test for type of setter
+		if ($properties[$property][$type] === 'property') {
+			return $model->$property = $value;
+		} else { //if ($properties[$property][$type] === 'method')
+			$method = 'set_' . $property;
+			return $model->$method($value);
+		}
 	}
 	/**
 	 * A function to get the value of the ID
-	 * of the Model. Will look for the property
-	 * at first, then for a getter.
+	 * of the Model.
 	 *
+	 * @uses Aurora_Property::get
+	 * @uses Aurora_Type::aurora
+	 * @uses Aurora_Database::pkey
 	 * @param Model $model
 	 * @return int/mixed
 	 */
 	public static function get_pkey($model) {
-		$au = Aurora_Type::aurora($model);
-		$pkey = Aurora_Database::pkey($au);
-		$public_props = get_class_vars(Aurora_Type::classname($model));
-		$getter = 'get_' . $pkey;
-		// 1. Test if a public ID field exists
-		if (in_array($pkey, $public_props)) {
-			return $model->$pkey;
-		} else
-		// 2. Test if a public getter for the ID exists
-		if (method_exists($model, $getter) && is_callable(array($model, $getter))) {
-			return $model->$getter;
-		}
-		// NO public id? probably something wrong
-		throw new Kohana_Exception('Model without a public ID');
+		$au		 = Aurora_Type::aurora($model);
+		$pkey	 = Aurora_Database::pkey($au);
+		return static::get($model, $pkey);
 	}
 	/**
 	 * A function to set the value of the ID
-	 * of the Model. It will force set the value
-	 * via Reflection, in case the
-	 * property "id" or the setter "set_id"
-	 * are not visible (private / protected)
-	 * in the current scope
+	 * of the Model.
+	 * It will force set the value via Reflection
+	 *  - if property "id" or the setter "set_id"
+	 *    are not visible (private / protected)
+	 *    in the current scope
+	 *  - and if $force parameter is true (default).
 	 *
+	 * @uses Aurora_Property::get
+	 * @uses Aurora_Type::aurora
+	 * @uses Aurora_Database::pkey
 	 * @param Model $model
-	 * @param mixed $value The value you want to set for id
+	 * @param int/mixed $value The value you want to set for id
 	 * @return int/mixed
 	 */
-	public static function set_pkey($model, $value) {
-		$au = Aurora_Type::aurora($model);
-		$pkey = Aurora_Database::pkey($au);
-		$public_props = get_class_vars(Aurora_Type::classname($model));
-		$setter = 'set_' . $pkey;
-		// 1. Test if a public ID field exists
-		if (in_array($pkey, $public_props)) {
-			return $model->$pkey = $value;
-		} else
-		// 2. Test if a public setter for the ID exists
-		if (method_exists($model, $setter) AND is_callable(array($model, $setter))) {
-			return $model->$setter($value);
-		} else
+	public static function set_pkey($model, $value, $force = TRUE) {
+		$au		 = Aurora_Type::aurora($model);
+		$pkey	 = Aurora_Database::pkey($au);
+		try {
+			return static::set($model, $pkey, $value);
+		} catch (Exception $e) {
+			if (!$force) // if force don't throw but continue below
+				throw $e;
+		}
 		// ---- PS: if you want for the protected setter method
 		// ---- to take precedence over the protected property
-		// ---- just refactor your protected property $id to $_id
-		// ---- to jump to 4. and avoid "entering" this third if
-		// 3. Test if a protected ID field exists
-		if (property_exists(Aurora_Type::model($model), $pkey)) {
+		// ---- just refactor that protected property $id to $_id
+		// Test if a protected ID field exists
+		if (property_exists($model, $pkey)) {
 			$property = new ReflectionProperty(Aurora_Type::classname($model), $pkey);
 			$property->setAccessible(TRUE);
 			return $property->setValue($model, $value);
 		} else
-		// 4. Test if a private/protected setter for the ID exists
-		if (method_exists($model, $setter)) { // AND ! is_callable(array($model, $setter))
+		// Test if a private/protected setter for the ID exists
+		if (method_exists($model, $setter = 'set_' . $pkey)) {
 			$method = new ReflectionMethod(Aurora_Type::classname($model), $setter);
 			$method->setAccessible(TRUE);
 			return $method->invokeArgs($model, array($value));
 		}
 		// Man, where's your ID?
-		throw new Kohana_Exception("Model without ID, or misconfigured pkey in $au!");
+		throw $e;
 	}
 }
