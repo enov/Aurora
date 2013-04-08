@@ -104,6 +104,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 * @see http://codeutopia.net/blog/2008/09/17/generic-collections-in-php/ By Craig on Nov 15, 2011
 	 * @param integer $offset
 	 * @param mixed $value
+	 * @return mixed the value set
 	 */
 	public function offsetSet($offset, $value) {
 		if (!$this->valid_type($value))
@@ -113,6 +114,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 		} else {
 			$this->_collection[$offset] = $value;
 		}
+		return $value;
 	}
 	/**
 	 * Unset offset
@@ -150,6 +152,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	public function clear() {
 		// empty the internal array
 		$this->_collection = array();
+		return $this;
 	}
 	/**
 	 * Get the underlying array

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Main class to interface with the database.
  * It uses the Aurora_ classes.
@@ -8,8 +9,9 @@
  * @author Samuel Demirdjian <s@enov.ws>
  * @copyright (c) 2013, Samuel Demirdjian
  * @license http://license.enov.ws/mit MIT
- * 
+ *
  */
+
 class Aurora_Database
 {
 	/**
@@ -61,10 +63,13 @@ class Aurora_Database
 		$config	 = static::config($aurora);
 		$query	 = static::query($aurora);
 		// prepare parameters
-		if (!is_array($param))
+		if (is_scalar($param))
 			$param	 = array(static::pkey($aurora) => $param);
 		foreach ($param as $column => $value) {
-			$query = $query->where($table . '.' . $column, '=', $value);
+			if (is_scalar($value))
+				$query = $query->where($table . '.' . $column, '=', $value);
+			else if (is_callable($value))
+				$value($query);
 		}
 		return $query->execute($config);
 	}

@@ -1,7 +1,7 @@
 <?php
 /**
- * A set of functions to manage the VALUE of the
- * primary key, i.e. ID of your Models.
+ * A set of functions to manage getters and setters
+ * and make them act like standard properties
  *
  * @package Aurora
  * @author Samuel Demirdjian <s@enov.ws>
