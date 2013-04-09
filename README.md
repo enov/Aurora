@@ -6,7 +6,7 @@ A kohana module to manually map models to database and expose a REST-like interf
 
 Version
 --------
-Aurora 0.1-alpha for Kohana 3.2
+Aurora 0.2-alpha for Kohana 3.2
 
 
 Description
