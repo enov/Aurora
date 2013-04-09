@@ -1,17 +1,15 @@
 <?php
-
-/*
+/**
  * Main class to interface with the database.
  * It uses the Aurora_ classes.
  * The DB CRUD operations are unaware of models.
  *
  * @package Aurora
- * @author Samuel Demirdjian <s@enov.ws>
+ * @author Samuel Demirdjian
  * @copyright (c) 2013, Samuel Demirdjian
  * @license http://license.enov.ws/mit MIT
  *
  */
-
 class Aurora_Database
 {
 	/**

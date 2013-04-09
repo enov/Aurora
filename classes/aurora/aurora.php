@@ -1,7 +1,29 @@
 <?php
-
+/**
+ * The Aurora class. Publishes the main API.
+ *
+ * @package Aurora
+ * @author Samuel Demirdjian
+ * @copyright (c) 2013, Samuel Demirdjian
+ * @license http://license.enov.ws/mit MIT
+ *
+ */
 class Aurora_Aurora
 {
+	/**
+	 * Get a Kohana View with the JSON representation
+	 * of your model or Collection
+	 *
+	 *     // Get the JSON view
+	 *     $view = AU::json_encode($model);
+	 *
+	 *     // render the view
+	 *     $this->response->body($view->render());
+	 *
+	 * @param Model/Collection $object
+	 * @return View a Kohana View with JSON rendered object
+	 * @throws View_Exception
+	 */
 	public static function json_encode($object) {
 		// Set the mode of the representation
 		if (Aurora_Type::is_model($object)) {
@@ -22,6 +44,26 @@ class Aurora_Aurora
 		// Create the View and return it
 		return View::factory($file, $data);
 	}
+	/**
+	 * Convert from JSON to Model or Collection
+	 *
+	 *     // for example, if $json_string = '{ id: 3, ... }';
+	 *     // Get the model from JSON string
+	 *     $model = AU::json_decode("Calendar_Event", $json_string);
+	 *
+	 *     // else if $json_string = '[{ id: 3, ... }, ...]';
+	 *     // get the collection from JSON string
+	 *     $collection = AU::json_decode("Calendar_Event", $json_string);
+	 *
+	 *     // OR just convert to $object
+	 *     $object = AU::json_decode("Calendar_Event", $json_string);
+	 *     // then test
+	 *     Aurora_Type::is_model($object); // is_collection($object)
+	 *
+	 * @param string $common_name
+	 * @param string $json The JSON string to convert from
+	 * @return Model/Collection
+	 */
 	public static function json_decode($common_name, $json) {
 		$json = json_decode($json);
 		return (is_array($json)) ?
@@ -30,9 +72,28 @@ class Aurora_Aurora
 		  // otherwise (if it is of type stdClass) return Model
 		  Aurora_StdClass::to_model($json, Aurora_Type::model($common_name));
 	}
+	/**
+	 * Check if your Model has an ID.
+	 *
+	 *     // test usage
+	 *     $is_new = AU::is_new($model);
+	 *
+	 * @param Model $model
+	 * @return boolean
+	 */
 	public static function is_new($model) {
+		if (!Aurora_Type::is_model($model))
+			throw new Kohana_Exception('Tested $model is not a Model.');
 		return (bool) Aurora_Property::get_pkey($model);
 	}
+	/**
+	 * Factory method to create Models or
+	 * Collections from the common_name
+	 *
+	 * @param string $classname
+	 * @param string $type "model" or "collection"
+	 * @return Model/Collection
+	 */
 	public static function factory($classname, $type = NULL) {
 		if (!empty($type))
 			$classname = Aurora_Type::$type($classname);

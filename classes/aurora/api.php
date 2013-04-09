@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * @package Aurora
+ * @author Samuel Demirdjian
+ * @copyright (c) 2013, Samuel Demirdjian
+ * @license http://license.enov.ws/mit MIT
+ */
 class Aurora_API
 {
 	protected static $url = '/api/';

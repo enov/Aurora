@@ -1,6 +1,13 @@
 <?php
-
 /**
+ * Utility class for finding related
+ * Models, Collections, "Aurora_" classes
+ * as well as Controllers (@TODO).
+ *
+ * @package Aurora
+ * @author Samuel Demirdjian
+ * @copyright (c) 2013, Samuel Demirdjian
+ * @license http://license.enov.ws/mit MIT
  *
  */
 class Aurora_Type

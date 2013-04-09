@@ -4,7 +4,7 @@
  * from and to objects of type stdClass
  *
  * @package Aurora
- * @author Samuel Demirdjian <s@enov.ws>
+ * @author Samuel Demirdjian
  * @copyright (c) 2013, Samuel Demirdjian
  * @license http://license.enov.ws/mit MIT
  *

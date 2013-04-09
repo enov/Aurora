@@ -1,5 +1,14 @@
 <?php
-
+/**
+ * A set of functions to manage reflection
+ * on Models
+ *
+ * @package Aurora
+ * @author Samuel Demirdjian
+ * @copyright (c) 2013, Samuel Demirdjian
+ * @license http://license.enov.ws/mit MIT
+ *
+ */
 class Aurora_Reflection
 {
 
@@ -14,7 +23,7 @@ class Aurora_Reflection
 	/**
 	 * Get the typehint of the first parameter
 	 * for the specified method
-	 * 
+	 *
 	 * @param string $class
 	 * @param string $method
 	 * @return mixed the name of the class

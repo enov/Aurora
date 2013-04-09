@@ -4,7 +4,7 @@
  * and make them act like standard properties
  *
  * @package Aurora
- * @author Samuel Demirdjian <s@enov.ws>
+ * @author Samuel Demirdjian
  * @copyright (c) 2013, Samuel Demirdjian
  * @license http://license.enov.ws/mit MIT
  *

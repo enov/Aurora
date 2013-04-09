@@ -2,6 +2,12 @@
 
 /**
  * Generic Collection class
+ *
+ * @package Aurora
+ * @author Samuel Demirdjian
+ * @copyright (c) 2013, Samuel Demirdjian
+ * @license http://license.enov.ws/mit MIT
+ *
  * @see http://aheimlich.dreamhosters.com/generic-collections/Collection.phps
  * @see http://codeutopia.net/code/library/CU/Collection.php
  *
@@ -17,7 +23,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 */
 	public function __construct($valueType) {
 		// process according to the class name
-		$this->_valueType = AU::name_model($this);
+		$this->_valueType = Aurora_Type::model($this);
 	}
 	/**
 	 * Create a new collection instance.
