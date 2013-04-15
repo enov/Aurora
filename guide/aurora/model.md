@@ -2,6 +2,8 @@
 
 There is nothing fancy here. Your models can be anything, and extend any class, provided that they are named "Model_".
 
+Constraint: ID autonumber
+
 ### A model example
 
     class Model_Event
