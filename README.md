@@ -3,6 +3,7 @@ Aurora
 
 A kohana module to manually map models to database and expose a REST-like interface
 
+![Aurora](aurora.png?raw=true)
 
 Version
 --------
