@@ -1,10 +1,12 @@
 # Creating Your Models
 
-There is nothing fancy here. Your models can be anything, and extend any class, provided that they are named "Model_".
+Your models can be anything, and extend any class, provided that they are named "Model_".
 
 Constraint: ID autonumber
 
 ### A model example
+
+Your models can be as simple as this one...
 
     class Model_User
     {
@@ -15,6 +17,8 @@ Constraint: ID autonumber
     }
 
 ### Another model example
+
+... or as verbose as the one below.
 
 	class Model_User
 	{
@@ -87,3 +91,50 @@ Constraint: ID autonumber
 			return ucfirst($this->_firstname) . ' ' . ucfirst($this->_lastname);
 		}
 	}
+
+Whatever your way of modeling, Aurora can manage your models.
+
+### Type hinting and Lazy Loading
+
+You have probably guessed that Aurora encourages the verbose version, but also
+works fine and respects the developers who use public properties and then do the
+validation and data filtering when saving to the database.
+
+[!!] IMHO, having getters and setters helps me write business logic around my
+Model properties. Programming aroung properties means building a RESTful app,
+because setting property values runs business code.
+
+Moreover, Aurora respects:
+
+- the use of **type hints** in setters
+- **lazy loading** uninitialized properties in getters.
+
+Please consider the example below, for type hinting and lazy loading.
+
+	class Model_User
+	{
+
+		...
+
+		/**
+		 * Collection_User_Role of the user
+		 */
+		protected $_roles;
+		public function get_roles() {
+			if ($this->_roles == NULL)
+				$this->_roles = Collection::factory('User_Role');
+			return $this->_roles;
+		}
+		protected function set_roles(Collection_User_Role $roles) {
+			$this->_roles = $roles;
+			return $this;
+		}
+
+		...
+
+	}
+
+While converting deep JSON objects, type hinting will help Aurora to know the
+Models and/or the Collections to convert JSON to. This is done by using Reflection,
+Aurora will try to read the type of the **type hinted** setter and will apply
+JSON decoding accordingly.
