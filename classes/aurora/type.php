@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Utility class for finding related Models, Collections, "Aurora_" classes
  * @TODO as well as Controllers.
@@ -31,7 +32,9 @@ class Aurora_Type
 	 * @return string
 	 */
 	public static function common($object) {
-		return preg_replace(array('/^Model_/', '/^Collection_/', '/^Aurora_/'), '', static::classname($object));
+		return preg_replace(
+		  array('/^Model_/', '/^Collection_/', '/^Aurora_/'), '', static::classname($object)
+		);
 	}
 	/**
 	 * Get the classname of the Model related to the $object.

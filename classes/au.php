@@ -1,6 +1,6 @@
 <?php
 
-class Au extends Aurora_Aurora
+class Au extends Aurora_Core
 {
 
 }

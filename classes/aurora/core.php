@@ -8,7 +8,7 @@
  * @license http://license.enov.ws/mit MIT
  *
  */
-class Aurora_Aurora
+class Aurora_Core
 {
 	/**
 	 * Get a Kohana View with the JSON representation
