@@ -32,7 +32,7 @@
 class Controller_API extends Controller_REST
 {
 
-	protected $expire			 = true;
+	protected $expire		 = true;
 	protected $authenticate	 = true;
 	protected $autorize		 = true;
 	/**
@@ -64,41 +64,29 @@ class Controller_API extends Controller_REST
 	}
 	public function action_index() {
 		$id		 = $this->request->param('id', 0);
-		$m_or_c	 = ($id) ?
-		  Model::factory($this->_common_name)->load($id) :
-		  Collection::factory($this->_common_name)->load();
-
-		$view = Represent::object($m_or_c, $this->resolved_format());
+		$m_or_c	 = Au::load($this->_common_name, $id);
+		$view = Au::json_encode($m_or_c);
 		$this->response->body($view->render());
 	}
 	public function action_create() {
-		$m	 = Model::factory($this->_common_name);
-		// load request json data
-		$o	 = json_decode($this->request->body());
-		$m->from_stdClass($o);
-		// save and return
-		$m->save();
-		$this->response->body(Represent::model($m)->render());
+		$m = Au::json_decode($this->_common_name, $this->request->body());
+		Au::save($m);
+		$view = Au::json_encode($m);
+		$this->response->body($view);
 	}
 	public function action_update() {
-		$m	 = Model::factory($this->_common_name);
-//		$m->load($this->request->param('id'));
-//		if (!$m->loaded())
-//			throw new HTTP_Exception_500('Model not loaded. Can not update');
-		// load request json data
-		$o	 = json_decode($this->request->body());
-		$m->from_stdClass($o);
-		// save and return
-		$m->save();
-		$this->response->body(Represent::model($m)->render());
+		$m = Au::json_decode($this->_common_name, $this->request->body());
+		Au::save($m);
+		$view = Au::json_encode($m);
+		$this->response->body($view);
 	}
 	public function action_delete() {
-		$m = Model::factory($this->_common_name);
-		$m->load($this->request->param('id'));
-		if (!$m->loaded())
+		$m = Au::load($this->_common_name, $id);
+		if (Au::is_new($m))
 			throw new HTTP_Exception_500('Model not loaded. Can not delete');
-		$m->delete();
-		$this->response->body(Represent::model($m)->render());
+		Au::delete($m);
+		$view = Au::json_encode($m);
+		$this->response->body($view);
 	}
 	protected function authorize() {
 		if (!$this->user->can($this->request->uri(), $this->request->action()))

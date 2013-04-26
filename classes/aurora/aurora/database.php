@@ -1,4 +1,7 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php
+
+defined('SYSPATH') or die('No direct script access.');
+
 /**
  * Main class to interface with the database.
  * It uses the Aurora_ classes.
@@ -49,8 +52,11 @@ class Aurora_Aurora_Database
 	 *
 	 * @return Database_Query_Builder_Select
 	 */
-	public static function query($aurora) {
-		return is_callable("$aurora::query") ? $aurora::query() : DB::select()->from(static::table($aurora));
+	public static function db_view($aurora) {
+		return
+		  is_callable("$aurora::db_view") ?
+		  $aurora::db_view() :
+		  DB::select()->from(static::table($aurora));
 	}
 	/**
 	 * DATABASE CRUD OPERATIONS
@@ -59,15 +65,17 @@ class Aurora_Aurora_Database
 		// prepare variables
 		$table	 = static::table($aurora);
 		$config	 = static::config($aurora);
-		$query	 = static::query($aurora);
+		$query	 = static::db_view($aurora);
 		// prepare parameters
-		if (is_scalar($param))
-			$param	 = array(static::pkey($aurora) => $param);
-		foreach ($param as $column => $value) {
-			if (is_scalar($value))
-				$query = $query->where($table . '.' . $column, '=', $value);
-			else if (is_callable($value))
-				$value($query);
+		if (!empty($param)) {
+			if (is_scalar($param))
+				$param = array(static::pkey($aurora) => $param);
+			foreach ($param as $column => $value) {
+				if (is_scalar($value))
+					$query = $query->where($table . '.' . $column, '=', $value);
+				else if (is_callable($value))
+					$value($query);
+			}
 		}
 		return $query->execute($config);
 	}
