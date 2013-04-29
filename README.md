@@ -25,6 +25,11 @@ Aurora is a Kohana module that helps you
     a.  Your models and your collections of models
     b.  Not fully RESTful. Primaraly aimed at Backbone.js
 
+TODO
+-----
+  - Upgrade to Kohana 3.3
+  - Add some tests
+  - Add profiling points
 
 Documentation:
 ---------------
