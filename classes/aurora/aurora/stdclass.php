@@ -93,7 +93,7 @@ class Aurora_Aurora_StdClass
 	 * @param Collection $collection
 	 * @return array
 	 */
-	public static function from_collection(Collection $collection) {
+	public static function from_collection(Aurora_Collection $collection) {
 		return array_map(
 		  // apply from_model
 		  function($m) {

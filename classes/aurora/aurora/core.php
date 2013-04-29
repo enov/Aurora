@@ -1,4 +1,7 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php
+
+defined('SYSPATH') or die('No direct script access.');
+
 /**
  * The Aurora class. Publishes the main API.
  *
@@ -31,7 +34,7 @@ class Aurora_Aurora_Core
 		} else if (Aurora_Type::is_collection($object)) {
 			$mode = 'collection';
 		} else {
-			throw new View_Exception("Variable $object not an instance of Model or Collection");
+			throw new View_Exception("Variable not an instance of Model or Collection");
 		}
 		// Find the custom view file for object representation
 		// if custom file is not set use default
@@ -111,13 +114,14 @@ class Aurora_Aurora_Core
 		// Run select query
 		$result	 = Aurora_Database::select($au, $params);
 		$count	 = count($result);
-		if (!$count) {
-			return false;
-		} else if (empty($mode)) {
-			$mode	 = ($count	 = 1) ? 'model' : 'collection';
+
+		if (empty($mode)) {
+			$mode = ($count == 1) ? 'model' : 'collection';
 		}
 
 		if ($mode == 'model') {
+			if (!$count)
+				return false;
 			$model = is_object($class_name) ? $class_name : static::factory($class_name, 'model');
 			$au::db_to_model($model, $result[0]);
 			return $model;

@@ -89,6 +89,6 @@ class Aurora_Aurora_Type
 		$pattern_collection = '/^Collection_/';
 		return
 		  preg_match($pattern_collection, Aurora_Type::classname($object)) AND
-		  $object instanceof Collection;
+		  $object instanceof Aurora_Collection;
 	}
 }

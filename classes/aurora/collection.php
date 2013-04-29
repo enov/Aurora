@@ -21,7 +21,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 * Construct a new typed collection
 	 * @param string valueType collection value type
 	 */
-	public function __construct($valueType) {
+	public function __construct() {
 		// process according to the class name
 		$this->_valueType = Aurora_Type::model($this);
 	}
