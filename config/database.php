@@ -22,6 +22,14 @@ return array
 			'username'	 => 'root',
 			'password'	 => 'r00tdb',
 			'persistent' => FALSE,
+			/**
+			 * Prepend the containing table name to each column name returned
+			 * in the result set.
+			 *
+			 * @see PDO::ATTR_FETCH_TABLE_NAMES
+			 * @link http://php.net/manual/en/pdo.constants.php PDO::ATTR_FETCH_TABLE_NAMES
+			 */
+			'fetch_table_names'	 => TRUE,
 		),
 		/**
 		 * The following extra options are available for PDO:
@@ -32,13 +40,5 @@ return array
 		'charset'			 => 'utf8',
 		'caching'			 => FALSE,
 		'profiling'			 => TRUE,
-		/**
-		 * Prepend the containing table name to each column name returned
-		 * in the result set.
-		 *
-		 * @see PDO::ATTR_FETCH_TABLE_NAMES
-		 * @link http://php.net/manual/en/pdo.constants.php PDO::ATTR_FETCH_TABLE_NAMES
-		 */
-		'fetch_table_names'	 => TRUE,
 	),
 );

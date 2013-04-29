@@ -96,6 +96,12 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 		return $value instanceof $this->_valueType;
 	}
 	/**
+	 * An alias of valid_type that exist for historical (B/C) reasons.
+	 */
+	public function isValidType($value) {
+		return $this->valid_type($value);
+	}
+	/**
 	 * Return an iterator
 	 * Implements IteratorAggregate
 	 * @return ArrayIterator

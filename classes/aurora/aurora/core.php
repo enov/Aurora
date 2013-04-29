@@ -99,7 +99,7 @@ class Aurora_Aurora_Core
 			$classname = Aurora_Type::$type($classname);
 		return new $classname();
 	}
-	public static function load($class_name, $params) {
+	public static function load($class_name, $params = NULL) {
 		if (is_scalar($params))
 			$mode	 = 'model';
 		if (Aurora_Type::is_model($class_name))
