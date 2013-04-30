@@ -36,7 +36,7 @@ class Aurora_Aurora_Property
 		return static::properties($model, 'set');
 	}
 	protected static function properties($model, $dir) {
-		if ($dir != 'get' OR $dir != 'set')
+		if ($dir != 'get' AND $dir != 'set')
 			throw new Kohana_Exception('direction should be either set or get');
 		// get the classname of the model
 		$classname	 = Aurora_Type::classname($model);
@@ -48,7 +48,7 @@ class Aurora_Aurora_Property
 		$pattern	 = "/^{$dir}_/";
 		// Loop over the class methods
 		foreach (get_class_methods($classname) as $method) {
-			$property = preg_replace($pattern, $method, 1, $count);
+			$property = preg_replace($pattern, '', $method, 1, $count);
 			// if preg_replace successful, this is a getter/setter method
 			if ($count) {
 				$properties[$property] = array(
@@ -81,7 +81,7 @@ class Aurora_Aurora_Property
 		if (!array_key_exists($property, $properties))
 			throw new Kohana_Exception('No such property or getter defined in model');
 		// test for type of getter
-		if ($properties[$property][$type] === 'property') {
+		if ($properties[$property]['type'] === 'property') {
 			return $model->$property;
 		} else { //if ($properties[$property][$type] === 'method')
 			$method = 'get_' . $property;

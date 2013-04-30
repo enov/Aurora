@@ -14,7 +14,7 @@ class Aurora_Aurora_Reflection
 
 	protected static $rflx_cache = array();
 	protected static function rflx_class($obj) {
-		$classname = is_string($obj) ? $obj : static::name_class($obj);
+		$classname = is_string($obj) ? $obj : Aurora_Type::classname($obj);
 		if (key_exists($classname, static::$rflx_cache))
 			return static::$rflx_cache[$classname];
 		else

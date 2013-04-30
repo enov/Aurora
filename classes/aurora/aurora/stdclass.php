@@ -1,4 +1,7 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php
+
+defined('SYSPATH') or die('No direct script access.');
+
 /**
  * Utility class to convert Models and Controllers
  * from and to objects of type stdClass
@@ -19,29 +22,30 @@ class Aurora_Aurora_StdClass
 	 * @return stdClass
 	 */
 	public static function from_model($model) {
-		$pattern_get = '/^get_/';
-		$properties	 = array();
-		// TODO: something like Aurora_Property to encapsulate logic
-		// maybe something similar and more generic Aurora_PKey?
-		$methods	 = get_class_methods($model);
-		foreach ($methods as $method) {
-			if (preg_match($pattern_get, $method))
-				$properties[]	 = $method;
-		}
-		$properties		 = array_merge($properties, get_class_vars(Aurora_Type::classname($model)));
-
-
-		$std = new stdClass();
-		foreach ($properties as $prop) {
-			$std_prop = preg_replace($pattern_get, '', $prop);
-			if (Aurora_Type::is_model($model->$prop)) {
-				$std->$std_prop = static::from_model($model->$prop);
-			} else if (Aurora_Type::is_collection ($model->$prop)) {
-				$std->$std_prop = $model->$prop->to_stdArray();
-			} else if ($model->$prop instanceof DateTime) {
-				$std->$std_prop = Date::format_iso8601($model->$prop);
-			} else {
-				$std->$std_prop = $model->$prop;
+		if (!Aurora_Type::is_model($model))
+			throw new Kohana_Exception('Invalid model');
+		// Get the list of properties
+		$props = Aurora_Property::getters($model);
+		// loop through the list of props
+		foreach ($props as $prop => $arrProp) {
+			// get the value
+			$value = Aurora_Property::get($model, $prop);
+			// if $value is a Model
+			if (Aurora_Type::is_model($value)) {
+				$std->$std_prop = static::from_model($value);
+			}
+			// if $value is a Collection
+			else if (Aurora_Type::is_collection($value)) {
+				$std->$std_prop = static::from_collection($value);
+			}
+			// Special care for DateTime
+			// -- is this generally acceptable?
+			else if ($value instanceof DateTime) {
+				$std->$std_prop = Date::format_iso8601($value);
+			}
+			// if scalar?
+			else {
+				$std->$std_prop = $value;
 			}
 		}
 		return $std;
@@ -54,35 +58,33 @@ class Aurora_Aurora_StdClass
 	 * @return Model
 	 */
 	public static function to_model($stdObj, $model) {
-		if (is_string($model))
-			$model				 = static::factory($model);
-		$model_properties	 = get_object_vars($model);
-		foreach ($stdObj as $prop) {
-			// if $prop = id force set id
-			static::set_pk($model, $stdObj->$prop);
-			// TODO: if from_stdProp_ exists in $aurora, use it
-			// if property exists in model set it
-			if (isset($model_properties[$prop])) {
-				$model->$prop	 = $stdObj->$prop;
+		$model	 = (is_string($model)) ? Aurora_Core::factory($model) : $model;
+		$au		 = Aurora_Type::aurora($model);
+		// Get the list of properties
+		$props	 = Aurora_Property::setters($model);
+		// loop through the list of props
+		foreach ($props as $prop => $arrProp) {
+			// test if property exists
+			if (!property_exists($stdObj, $prop))
+				continue;
+			// get the value
+			$value = $stdObj->$prop;
+			// if property is primary key
+			if ($prop == Aurora_Database::pkey($au)) {
+				Aurora_Property::set_pkey($model, $value);
 				continue;
 			}
-			// if setter exists in model
-			// have its type hint, cast, then set
-			$setter			 = 'set_' . $prop;
-			if (method_exists($model, $setter) && is_callable(array($model, $setter))) {
+			// if property is setter
+			if ($arrProp['type'] == 'method') {
+				$setter = 'set_' . $prop;
 				$typehint = Aurora_Reflection::typehint($model, $setter);
-				if (is_null($typehint)) {
-					$model->$setter($stdObj->$prop);
-					continue;
-				} else if (is_subclass_of($typehint, 'Collection')) {
-					$model->$setter(static::to_collection($stdObj->$prop, $typehint));
-					continue;
-				} else { // must be a model, do we need to test anything here?
-					$model->$setter(static::to_model($stdObj->$prop, $typehint));
-					continue;
+				if (Aurora_Type::is_collection($typehint)) {
+					$value = static::to_collection($value, $typehint);
+				} else if (Aurora_Type::is_model($typehint)) {
+					$value = static::to_model($value, $typehint);
 				}
 			}
-			// TODO: test for PSR-2 style setters
+			Aurora_Property::set($model, $prop, $value);
 		}
 		return $model;
 	}
