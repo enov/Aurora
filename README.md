@@ -29,7 +29,7 @@ Installation
 Aurora is currently dependant on krestful from @samsoir. You will find a forked
 krestful project that works with Aurora.
 
-In your bootstrap.php, please enable:
+In your bootstrap.php, please enable Aurora and krestful:
 
 	/**
 	 * Enable modules. Modules are referenced by a relative or absolute path.
@@ -50,11 +50,11 @@ TODO
   - Specify multiple primary keys for each table in Aurora
   - Merge krestful into the project
   - Set-up new Auth and User modules compatible with Aurora
-  - Take care of PSR-2 getters/setters?
+  - Take care of PSR-2 getters/setters? (low-priority?)
 
 Documentation:
 ---------------
-Please see the guide.
+Please refer to the guide folder, or enable the userguide Kohana module.
 
 
 License
