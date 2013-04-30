@@ -30,6 +30,7 @@ TODO
   - Upgrade to Kohana 3.3
   - Add some tests
   - Add profiling points
+  - Take care of PSR-2 getters/setters?
 
 Documentation:
 ---------------
