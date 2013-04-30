@@ -1,7 +1,7 @@
 # General Usage
 
-Once you have correctly set-up your Auroras and Collections, the module
-will be able to publish
+Once you have correctly set-up your Auroras and Collections, this module
+will be able to perform the following operations.
 
 ## Main Database API
 
@@ -11,7 +11,7 @@ Load a Model or a Collection from your database.
 
 Example:
 
-	Au::load('person', 1);
+	$person = Au::load('person', 1);
 
 ### Au::save()
 
@@ -33,11 +33,12 @@ Example:
 
 ### Au::json_encode()
 
-Encode your Model or your Collection to JSON.
+Encode your Model or your Collection to JSON. This returns a Kohana View.
 
 Example:
 
-	Au::json_encode($person);
+	$view = Au::json_encode($person);
+	$this->response->body($view->render());
 
 ### Au::json_decode()
 
@@ -45,4 +46,4 @@ Decode your Model or your Collection from JSON.
 
 Example:
 
-	Au::json_decode('person', $str_json);
+	$person = Au::json_decode('person', $str_json);
