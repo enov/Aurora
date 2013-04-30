@@ -96,10 +96,11 @@ class Aurora_Aurora_StdClass
 	 * @return array
 	 */
 	public static function from_collection(Aurora_Collection $collection) {
+		$static = get_called_class();
 		return array_map(
 		  // apply from_model
 		  function($m) {
-			  return static::from_model($m);
+			  return $static::from_model($m);
 		  },
 		  // on each element of the internal array
 		  $collection->to_array()
