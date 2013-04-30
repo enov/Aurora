@@ -1,4 +1,6 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php
+
+defined('SYSPATH') or die('No direct script access.');
 
 /**
  * Utility class for finding related Models, Collections, "Aurora_" classes
@@ -75,9 +77,21 @@ class Aurora_Aurora_Type
 	 * @param mixed $object
 	 * @return boolean
 	 */
+	public static function is_aurora($object) {
+		$pattern = '/^Aurora_/';
+		return
+		  preg_match($pattern, Aurora_Type::classname($object)) and
+		  $object instanceof Aurora_Interface;
+	}
+	/**
+	 * Test if $object is a Model
+	 *
+	 * @param mixed $object
+	 * @return boolean
+	 */
 	public static function is_model($object) {
-		$pattern_model = '/^Model_/';
-		return preg_match($pattern_model, Aurora_Type::classname($object));
+		$pattern = '/^Model_/';
+		return preg_match($pattern, Aurora_Type::classname($object));
 	}
 	/**
 	 * Test if $object is a Collection
@@ -86,9 +100,9 @@ class Aurora_Aurora_Type
 	 * @return boolean
 	 */
 	public static function is_collection($object) {
-		$pattern_collection = '/^Collection_/';
+		$pattern = '/^Collection_/';
 		return
-		  preg_match($pattern_collection, Aurora_Type::classname($object)) AND
+		  preg_match($pattern, Aurora_Type::classname($object)) AND
 		  $object instanceof Aurora_Collection;
 	}
 }
