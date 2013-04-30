@@ -1,7 +1,7 @@
 ## [Aurora]()
    - [Create Your Models](model)
    - [Create Your Collections](collection)
-   - [Create Your Aurora_s](aurora)
+   - [Create Your Auroras](aurora)
    - [Expose Your API](api)
    - [General Usage](usage)
    - [Bonus: Backbone.js](backbone)
