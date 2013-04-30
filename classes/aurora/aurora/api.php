@@ -10,7 +10,7 @@ class Aurora_Aurora_API
 	protected static $url = '/api/';
 	protected static $path = 'classes/controller/api';
 	public static function url($object) {
-		$common_name = Aurora_Type::common($object);
+		$common_name = Aurora_Type::cname($object);
 		$url = str_replace('_', '/', strtolower($common_name));
 		return static::$url . $url;
 	}

@@ -31,6 +31,8 @@ TODO
   - Add some tests
   - Add profiling points
   - Take care of PSR-2 getters/setters?
+  - Specify multiple database table in Aurora
+  - Specify multiple primary key for each table in Aurora
 
 Documentation:
 ---------------

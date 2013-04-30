@@ -34,7 +34,7 @@ class Aurora_Aurora_Database
 	 * @return string
 	 */
 	public static function table($aurora) {
-		return isset($aurora::$table) ? $aurora::$table : strtolower(Aurora_Type::common($aurora)) . 's';
+		return isset($aurora::$table) ? $aurora::$table : strtolower(Aurora_Type::cname($aurora)) . 's';
 	}
 	/**
 	 * returns the column name of the
@@ -52,10 +52,10 @@ class Aurora_Aurora_Database
 	 *
 	 * @return Database_Query_Builder_Select
 	 */
-	public static function db_view($aurora) {
+	public static function qview($aurora) {
 		return
-		  is_callable("$aurora::db_view") ?
-		  $aurora::db_view() :
+		  is_callable("$aurora::qview") ?
+		  $aurora::qview() :
 		  DB::select()->from(static::table($aurora));
 	}
 	/**
@@ -65,7 +65,7 @@ class Aurora_Aurora_Database
 		// prepare variables
 		$table	 = static::table($aurora);
 		$config	 = static::config($aurora);
-		$query	 = static::db_view($aurora);
+		$query	 = static::qview($aurora);
 		// prepare parameters
 		if (!empty($param)) {
 			if (is_scalar($param))

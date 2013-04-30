@@ -33,7 +33,7 @@ class Aurora_Aurora_Type
 	 * @param mixed $object
 	 * @return string
 	 */
-	public static function common($object) {
+	public static function cname($object) {
 		return preg_replace(
 		  array('/^Model_/', '/^Collection_/', '/^Aurora_/'), '', static::classname($object)
 		);
@@ -47,7 +47,7 @@ class Aurora_Aurora_Type
 	 * @return string
 	 */
 	public static function model($object) {
-		return 'Model_' . static::common($object);
+		return 'Model_' . static::cname($object);
 	}
 	/**
 	 * Get the classname of the Collection related to the $object.
@@ -58,7 +58,7 @@ class Aurora_Aurora_Type
 	 * @return string
 	 */
 	public static function collection($object) {
-		return 'Collection_' . static::common($object);
+		return 'Collection_' . static::cname($object);
 	}
 	/**
 	 * Get the classname of the Aurora related to the $object.
@@ -69,7 +69,7 @@ class Aurora_Aurora_Type
 	 * @return string
 	 */
 	public static function aurora($object) {
-		return 'Aurora_' . static::common($object);
+		return 'Aurora_' . static::cname($object);
 	}
 	/**
 	 * Test if $object is a Model
