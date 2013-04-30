@@ -87,7 +87,7 @@ class Aurora_Aurora_Core
 	public static function is_new($model) {
 		if (!Aurora_Type::is_model($model))
 			throw new Kohana_Exception('Tested $model is not a Model.');
-		return (bool) Aurora_Property::get_pkey($model);
+		return ! Aurora_Property::get_pkey($model);
 	}
 	/**
 	 * Factory method to create Models or
