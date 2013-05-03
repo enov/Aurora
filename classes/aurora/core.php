@@ -152,7 +152,7 @@ class Aurora_Core
 		}
 		return $object;
 	}
-	public static function delete($object) {
+	public static function delete($object) {d
 		// deep delete by looping through the collection
 		if (Aurora_Type::is_collection($object)) {
 			foreach ($object as $model) {
@@ -169,7 +169,7 @@ class Aurora_Core
 		// Run the delete query
 		return Aurora_Database::delete($au, $pk);
 	}
-	protected function create($model) {
+	protected static function create($model) {
 		// Get the Aurora_ class for this model
 		$au = Aurora_Type::aurora($model);
 		// Get the $row array from Aurora_ to be inserted
@@ -182,7 +182,7 @@ class Aurora_Core
 		}
 		return $model;
 	}
-	protected function update($model) {
+	protected static function update($model) {
 		// Get the Aurora_ class for this model
 		$au = Aurora_Type::aurora($model);
 		// Get the $row array from Aurora_ to be inserted
