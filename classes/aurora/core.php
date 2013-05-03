@@ -78,7 +78,7 @@ class Aurora_Core
 	/**
 	 * Check if your Model has an ID.
 	 *
-	 *     // test usage
+	 *     // usage
 	 *     $is_new = AU::is_new($model);
 	 *
 	 * @param Model $model
@@ -102,6 +102,14 @@ class Aurora_Core
 			$classname = Aurora_Type::$type($classname);
 		return new $classname();
 	}
+	/**
+	 * Load a model or collection from database
+	 * using Aurora
+	 *
+	 * @param string/aurora $object
+	 * @param scalar/array/callable $params
+	 * @return Model/Collection
+	 */
 	public static function load($object, $params = NULL) {
 		if (is_scalar($params))
 			$mode = 'model';
@@ -110,7 +118,7 @@ class Aurora_Core
 		if (Aurora_Type::is_collection($object))
 			$mode = 'collection';
 		// Get the Aurora_ class for this model
-		$au = Aurora_Type::aurora($object);
+		$au = Aurora_Type::is_aurora($object) ? $object : Aurora_Type::aurora($object);
 		// Run select query
 		$result = Aurora_Database::select($au, $params);
 		$count = count($result);
@@ -152,7 +160,7 @@ class Aurora_Core
 		}
 		return $object;
 	}
-	public static function delete($object) {d
+	public static function delete($object) {
 		// deep delete by looping through the collection
 		if (Aurora_Type::is_collection($object)) {
 			foreach ($object as $model) {
@@ -191,5 +199,9 @@ class Aurora_Core
 		// Run the update query
 		Aurora_Database::update($au, $row, $pk);
 		return $model;
+	}
+
+	public static function type() {
+		return new Aurora_Type;
 	}
 }

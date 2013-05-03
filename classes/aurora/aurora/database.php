@@ -21,7 +21,7 @@ class Aurora_Aurora_Database
 	 * @return string
 	 */
 	public static function config($aurora) {
-		return isset($aurora::$config) ? $aurora::$config : 'pdo';
+		return isset($aurora->config) ? $aurora->config : 'pdo';
 	}
 	/**
 	 * returns the name of the table
@@ -34,7 +34,7 @@ class Aurora_Aurora_Database
 	 * @return string
 	 */
 	public static function table($aurora) {
-		return isset($aurora::$table) ? $aurora::$table : strtolower(Aurora_Type::cname($aurora)) . 's';
+		return isset($aurora->table) ? $aurora->table : strtolower(Aurora_Type::cname($aurora)) . 's';
 	}
 	/**
 	 * returns the column name of the
@@ -44,7 +44,7 @@ class Aurora_Aurora_Database
 	 * @return string
 	 */
 	public static function pkey($aurora) {
-		return isset($aurora::$pkey) ? $aurora::$pkey : 'id';
+		return isset($aurora->pkey) ? $aurora->pkey : 'id';
 	}
 	/**
 	 * Main Query (DB View) to be used by the
