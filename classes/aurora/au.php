@@ -4,12 +4,12 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Aurora_Au extends Aurora_Core
 {
-	protected static $type, $prop, $rflx, $db, $bbjs, $std;
+	protected static $type, $prop, $rflx, $db, $bb, $std;
 	/**
 	 * Shortcut to Aurora_Type for method chaining.
 	 *
 	 * usage:
-	 * 
+	 *
 	 *		Au::type()->is_collection($col) ? 'yes' : 'no';
 	 *
 	 * @return Aurora_Type
@@ -34,6 +34,66 @@ class Aurora_Au extends Aurora_Core
 		  static::$prop ?
 		  static::$prop :
 		  static::$prop = new Aurora_Property();
+	}
+	/**
+	 * Shortcut to Aurora_Reflection for method chaining.
+	 *
+	 * usage:
+	 *
+	 *
+	 *
+	 * @return Aurora_Reflection
+	 */
+	public static function rflx() {
+		return
+		  static::$rflx ?
+		  static::$rflx :
+		  static::$rflx = new Aurora_Reflection();
+	}
+	/**
+	 * Shortcut to Aurora_Database for method chaining.
+	 *
+	 * usage:
+	 *
+	 *
+	 *
+	 * @return Aurora_Database
+	 */
+	public static function db() {
+		return
+		  static::$db ?
+		  static::$db :
+		  static::$db = new Aurora_Database();
+	}
+	/**
+	 * Shortcut to Aurora_Backbone for method chaining.
+	 *
+	 * usage:
+	 *
+	 *		Au::bb()->js();
+	 *
+	 * @return Aurora_Backbone
+	 */
+	public static function bb() {
+		return
+		  static::$bb ?
+		  static::$bb :
+		  static::$bb = new Aurora_Backbone();
+	}
+	/**
+	 * Shortcut to Aurora_StdClass for method chaining.
+	 *
+	 * usage:
+	 *
+	 *
+	 *
+	 * @return Aurora_StdClass
+	 */
+	public static function std() {
+		return
+		  static::$std ?
+		  static::$std :
+		  static::$std = new Aurora_StdClass();
 	}
 }
 
