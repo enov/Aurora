@@ -143,12 +143,20 @@ class Aurora_Aurora_Core
 			return $collection;
 		}
 	}
+	/**
+	 * Save a model or a collection to the database
+	 * using Aurora
+	 *
+	 * @param Model/Collection $object
+	 * @return Model/Collection
+	 */
 	public static function save($object) {
 		// deep save by looping through the collection
 		if (Aurora_Type::is_collection($object)) {
 			foreach ($object as $model) {
 				static::save($model);
 			}
+			return $object;
 		}
 		// test if the model is new
 		if (static::is_new($object)) {
@@ -160,6 +168,14 @@ class Aurora_Aurora_Core
 		}
 		return $object;
 	}
+	/**
+	 * Delete a model or a collection from the database
+	 * using Aurora
+	 *
+	 * @param Model/Collection $object
+	 * @return int? number of affected rows?
+	 * @throws Kohana_Exception
+	 */
 	public static function delete($object) {
 		// deep delete by looping through the collection
 		if (Aurora_Type::is_collection($object)) {
@@ -177,6 +193,12 @@ class Aurora_Aurora_Core
 		// Run the delete query
 		return Aurora_Database::delete($au, $pk);
 	}
+	/**
+	 * Inserts a model to the database
+	 *
+	 * @param Model $model
+	 * @return Model
+	 */
 	protected static function create($model) {
 		// Get the Aurora_ class for this model
 		$au = Aurora_Type::aurora($model);
@@ -190,6 +212,12 @@ class Aurora_Aurora_Core
 		}
 		return $model;
 	}
+	/**
+	 * Updates a model in the database
+	 *
+	 * @param Model $model
+	 * @return Model
+	 */
 	protected static function update($model) {
 		// Get the Aurora_ class for this model
 		$au = Aurora_Type::aurora($model);
