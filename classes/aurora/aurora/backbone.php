@@ -5,7 +5,7 @@
  * @copyright (c) 2013, Samuel Demirdjian
  * @license http://license.enov.ws/mit MIT
  */
-class Aurora_Aurora_API
+class Aurora_Aurora_Backbone
 {
 	protected static $url = '/api/';
 	protected static $path = 'classes/controller/api';
@@ -14,7 +14,7 @@ class Aurora_Aurora_API
 		$url = str_replace('_', '/', strtolower($common_name));
 		return static::$url . $url;
 	}
-	public static function backbone() {
+	public static function js() {
 		// list Controller_Api files using Kohana::list_files
 		$list_files = Kohana::list_files(static::$path);
 		// flatten the array
