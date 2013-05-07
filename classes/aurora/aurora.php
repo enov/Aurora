@@ -89,6 +89,10 @@ class Aurora_Aurora
 	public function load($params = NULL) {
 		Au::load($this->au, $params);
 	}
+	/**
+	 *
+	 * @param type $object
+	 */
 	public function save($object) {
 		if (
 		  !Au::type()->is_collection($object) and
@@ -97,7 +101,7 @@ class Aurora_Aurora
 			$object = $this->load($object);
 		Au::save($object);
 	}
-	public static function delete($object) {
+	public function delete($object) {
 		if (
 		  !Au::type()->is_collection($object) and
 		  !Au::type()->is_model($object)
