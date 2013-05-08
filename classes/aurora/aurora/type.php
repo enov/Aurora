@@ -35,7 +35,7 @@ class Aurora_Aurora_Type
 	 */
 	public static function cname($object) {
 		return preg_replace(
-		  array('/^Model_/', '/^Collection_/', '/^Aurora_/'), '', static::classname($object)
+		  array('/^Model_/', '/^Collection_/', '/^Aurora_/', '/^Controller_API_/'), '', static::classname($object)
 		);
 	}
 	/**
@@ -72,6 +72,17 @@ class Aurora_Aurora_Type
 		return 'Aurora_' . static::cname($object);
 	}
 	/**
+	 * Get the classname of the Controller_API related to the $object.
+	 * for ex: if $object is of type Model_Person, the function returns
+	 * Controller_API_Person.
+	 *
+	 * @param mixed $object
+	 * @return string
+	 */
+	public static function controller($object) {
+		return 'Controller_API_' . static::cname($object);
+	}
+	/**
 	 * Test if $object is a Model
 	 *
 	 * @param mixed $object
@@ -80,7 +91,7 @@ class Aurora_Aurora_Type
 	public static function is_aurora($object) {
 		$pattern = '/^Aurora_/';
 		return
-		  preg_match($pattern, Aurora_Type::classname($object)) and
+		  preg_match($pattern, static::classname($object)) and
 		  $object instanceof Aurora_Interface;
 	}
 	/**
@@ -91,7 +102,7 @@ class Aurora_Aurora_Type
 	 */
 	public static function is_model($object) {
 		$pattern = '/^Model_/';
-		return preg_match($pattern, Aurora_Type::classname($object));
+		return preg_match($pattern, static::classname($object));
 	}
 	/**
 	 * Test if $object is a Collection
@@ -102,7 +113,19 @@ class Aurora_Aurora_Type
 	public static function is_collection($object) {
 		$pattern = '/^Collection_/';
 		return
-		  preg_match($pattern, Aurora_Type::classname($object)) AND
+		  preg_match($pattern, static::classname($object)) AND
 		  $object instanceof Aurora_Collection;
+	}
+	/**
+	 * Test if $object is a Controller_API
+	 *
+	 * @param mixed $object
+	 * @return boolean
+	 */
+	public static function is_controller($object) {
+		$pattern = '/^Controller_API_/';
+		return
+		  preg_match($pattern, static::classname($object)) AND
+		  $object instanceof Controller_API;
 	}
 }
