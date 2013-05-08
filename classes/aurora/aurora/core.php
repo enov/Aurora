@@ -118,7 +118,7 @@ class Aurora_Aurora_Core
 		if (Aurora_Type::is_collection($object))
 			$mode = 'collection';
 		// Get the Aurora_ class for this model
-		$au = Aurora_Type::is_aurora($object) ? $object : Aurora_Type::aurora($object);
+		$au = Aurora_Type::is_aurora($object) ? $object : static::factory($object, 'aurora');
 		// Run select query
 		$result = Aurora_Database::select($au, $params);
 		$count = count($result);
@@ -131,13 +131,13 @@ class Aurora_Aurora_Core
 			if (!$count)
 				return false;
 			$model = is_object($object) ? $object : static::factory($object, 'model');
-			$au::db_to_model($model, $result[0]);
+			$au->db_to_model($model, $result[0]);
 			return $model;
 		} else {
 			$collection = is_object($object) ? $object : static::factory($object, 'collection');
 			foreach ($result as $row) {
 				$model = static::factory($object, 'model');
-				$au::db_to_model($model, $row);
+				$au->db_to_model($model, $row);
 				$collection->add($model);
 			}
 			return $collection;

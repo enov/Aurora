@@ -12,6 +12,6 @@
  */
 interface Aurora_Aurora_Interface
 {
-	public static function db_from_model($model);
-	public static function db_to_model($model, array $row);
+	public function db_from_model($model);
+	public function db_to_model($model, array $row);
 }

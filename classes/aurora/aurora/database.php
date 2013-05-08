@@ -54,18 +54,20 @@ class Aurora_Aurora_Database
 	 */
 	public static function qview($aurora) {
 		return
-		  is_callable("$aurora::qview") ?
-		  $aurora::qview() :
-		  DB::select()->from(static::table($aurora));
+		  isset($aurora->qview) ?
+		  $aurora->qview :
+		  is_callable(array($aurora, 'qview')) ?
+			$aurora->qview() :
+			DB::select()->from(static::table($aurora));
 	}
 	/**
 	 * DATABASE CRUD OPERATIONS
 	 */
 	public static function select($aurora, $param) {
 		// prepare variables
-		$table	 = static::table($aurora);
-		$config	 = static::config($aurora);
-		$query	 = static::qview($aurora);
+		$table = static::table($aurora);
+		$config = static::config($aurora);
+		$query = static::qview($aurora);
 		// prepare parameters
 		if (!empty($param)) {
 			if (is_scalar($param))
@@ -81,24 +83,24 @@ class Aurora_Aurora_Database
 	}
 	public static function insert($aurora, $row) {
 		// prepare variables
-		$table	 = static::table($aurora);
-		$config	 = static::config($aurora);
+		$table = static::table($aurora);
+		$config = static::config($aurora);
 		// run insert
 		return DB::insert($table)->columns(array_keys($row))->values(array_values($row))->execute($config);
 	}
 	public static function update($aurora, $row, $pk) {
 		// prepare variables
-		$table	 = static::table($aurora);
-		$pkey	 = static::pkey($aurora);
-		$config	 = static::config($aurora);
+		$table = static::table($aurora);
+		$pkey = static::pkey($aurora);
+		$config = static::config($aurora);
 		// run update
 		return DB::update($table)->set($row)->where($pkey, '=', $pk)->execute($config);
 	}
 	public static function delete($aurora, $pk) {
 		// prepare variables
-		$table	 = static::table($aurora);
-		$pkey	 = static::pkey($aurora);
-		$config	 = static::config($aurora);
+		$table = static::table($aurora);
+		$pkey = static::pkey($aurora);
+		$config = static::config($aurora);
 		// run delete
 		return DB::delete($table)->where($pkey, '=', $pk)->execute($config);
 	}
