@@ -103,7 +103,7 @@ class Aurora_Aurora_Property
 		if (!array_key_exists($property, $properties))
 			throw new Kohana_Exception('No such property or setter defined in model');
 		// test for type of setter
-		if ($properties[$property][$type] === 'property') {
+		if ($properties[$property]['type'] === 'property') {
 			return $model->$property = $value;
 		} else { //if ($properties[$property][$type] === 'method')
 			$method = 'set_' . $property;

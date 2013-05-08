@@ -26,26 +26,27 @@ class Aurora_Aurora_StdClass
 			throw new Kohana_Exception('Invalid model');
 		// Get the list of properties
 		$props = Aurora_Property::getters($model);
+		// Create the stdClass object
+		$std = new stdClass();
 		// loop through the list of props
 		foreach ($props as $prop => $arrProp) {
 			// get the value
 			$value = Aurora_Property::get($model, $prop);
 			// if $value is a Model
 			if (Aurora_Type::is_model($value)) {
-				$std->$std_prop = static::from_model($value);
+				$std->$prop = static::from_model($value);
 			}
 			// if $value is a Collection
 			else if (Aurora_Type::is_collection($value)) {
-				$std->$std_prop = static::from_collection($value);
+				$std->$prop = static::from_collection($value);
 			}
-			// Special care for DateTime
-			// -- is this generally acceptable?
+			// Special care for DateTime. Is this generally acceptable?
 			else if ($value instanceof DateTime) {
-				$std->$std_prop = Date::format_iso8601($value);
+				$std->$prop = Date::format_iso8601($value);
 			}
 			// if scalar?
 			else {
-				$std->$std_prop = $value;
+				$std->$prop = $value;
 			}
 		}
 		return $std;
@@ -58,10 +59,10 @@ class Aurora_Aurora_StdClass
 	 * @return Model
 	 */
 	public static function to_model($stdObj, $model) {
-		$model	 = (is_string($model)) ? Aurora_Core::factory($model) : $model;
-		$au		 = Aurora_Type::aurora($model);
+		$model = (is_string($model)) ? Aurora_Core::factory($model) : $model;
+		$au = Aurora_Type::aurora($model);
 		// Get the list of properties
-		$props	 = Aurora_Property::setters($model);
+		$props = Aurora_Property::setters($model);
 		// loop through the list of props
 		foreach ($props as $prop => $arrProp) {
 			// test if property exists
@@ -78,9 +79,10 @@ class Aurora_Aurora_StdClass
 			if ($arrProp['type'] == 'method') {
 				$setter = 'set_' . $prop;
 				$typehint = Aurora_Reflection::typehint($model, $setter);
-				if (Aurora_Type::is_collection($typehint)) {
+				$classname_only = TRUE;
+				if (Aurora_Type::is_collection($typehint, $classname_only)) {
 					$value = static::to_collection($value, $typehint);
-				} else if (Aurora_Type::is_model($typehint)) {
+				} else if (Aurora_Type::is_model($typehint, $classname_only)) {
 					$value = static::to_model($value, $typehint);
 				}
 			}
@@ -95,13 +97,10 @@ class Aurora_Aurora_StdClass
 	 * @param Collection $collection
 	 * @return array
 	 */
-	public static function from_collection(Aurora_Collection $collection) {
-		$static = get_called_class();
+	public static function from_collection(Collection $collection) {
 		return array_map(
 		  // apply from_model
-		  function($m) {
-			  return $static::from_model($m);
-		  },
+		  array(get_called_class(), 'from_model'),
 		  // on each element of the internal array
 		  $collection->to_array()
 		);
@@ -116,10 +115,10 @@ class Aurora_Aurora_StdClass
 	 */
 	public static function to_collection(array $std_array, $collection) {
 		if (is_string($collection))
-			$collection		 = static::factory($collection);
+			$collection = Aurora_Core::factory($collection, 'collection');
 		/* @var $collection Collection */
 		$collection->clear();
-		$model_classname = Aurora_Type::model($collection->classname());
+		$model_classname = Aurora_Type::model($collection);
 		foreach ($std_array as $stdObj) {
 			$m = static::to_model($stdObj, $model_classname);
 			$collection->add($m);
