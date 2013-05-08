@@ -133,13 +133,13 @@ class Aurora_Aurora_Core
 			if (!$count)
 				return false;
 			$model = is_object($object) ? $object : static::factory($object, 'model');
-			$au->db_to_model($model, $result[0]);
+			$au->db_retreive($model, $result[0]);
 			return $model;
 		} else {
 			$collection = is_object($object) ? $object : static::factory($object, 'collection');
 			foreach ($result as $row) {
 				$model = static::factory($object, 'model');
-				$au->db_to_model($model, $row);
+				$au->db_retreive($model, $row);
 				$collection->add($model);
 			}
 			return $collection;
@@ -205,7 +205,7 @@ class Aurora_Aurora_Core
 		// Get the Aurora_ class for this model
 		$au = static::factory($model, 'aurora');
 		// Get the $row array from Aurora_ to be inserted
-		$row = $au->db_from_model($model);
+		$row = $au->db_persist($model);
 		// Run the insert query
 		$result = Aurora_Database::insert($au, $row);
 		if ($result) {
@@ -224,7 +224,7 @@ class Aurora_Aurora_Core
 		// Get the Aurora_ class for this model
 		$au = static::factory($model, 'aurora');
 		// Get the $row array from Aurora_ to be inserted
-		$row = $au->db_from_model($model);
+		$row = $au->db_persist($model);
 		$pk = Aurora_Property::get_pkey($model);
 		// Run the update query
 		Aurora_Database::update($au, $row, $pk);
