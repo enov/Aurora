@@ -21,7 +21,11 @@ class Aurora_Aurora_Type
 	 * @return string
 	 */
 	public static function classname($object) {
-		return is_string($object) ? $object : get_class($object);
+		if (is_object($object))
+			return get_class($object);
+		if (is_string($object))
+			return $object;
+		return FALSE;
 	}
 	/**
 	 * Get the common name from $object, a common name is the name of the concept
