@@ -109,4 +109,9 @@ class Aurora_Aurora
 			$object = $this->load($object);
 		Au::delete($object);
 	}
+
+	public function __call($name, $arguments) {
+		call_user_func_array(array($this->au, $name), $arguments);
+		return $this;
+	}
 }
