@@ -76,14 +76,21 @@ class Aurora_Aurora_StdClass
 				continue;
 			}
 			// if property is setter
-			if ($arrProp['type'] == 'method') {
+			if ($arrProp['type'] == 'method' AND $value != NULL) {
+			fire::dump('prop', $prop);
+			fire::dump('arrProp', $arrProp);
+			fire::dump('value', $value);
 				$setter = 'set_' . $prop;
 				$typehint = Aurora_Reflection::typehint($model, $setter);
 				$classname_only = TRUE;
+				fire::dump('typehint', $typehint);
 				if (Aurora_Type::is_collection($typehint, $classname_only)) {
 					$value = static::to_collection($value, $typehint);
+					fire::dump('typehint_is_collection', $typehint);
 				} else if (Aurora_Type::is_model($typehint, $classname_only)) {
+					fire::dump('typehint_model', 'success');
 					$value = static::to_model($value, $typehint);
+					fire::dump('typehint_is_model', $typehint);
 				}
 			}
 			Aurora_Property::set($model, $prop, $value);
