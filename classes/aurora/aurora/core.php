@@ -189,7 +189,7 @@ class Aurora_Aurora_Core
 		if (static::is_new($object))
 			throw new Kohana_Exception('Can not delete a new Model.');
 		// Get the Aurora_ class for this model
-		$au = Aurora_Type::aurora($object);
+		$au = static::factory($object, 'aurora');
 		// Get the $pk (the ID) of the $model
 		$pk = Aurora_Property::get_pkey($object);
 		// Run the delete query
@@ -203,9 +203,9 @@ class Aurora_Aurora_Core
 	 */
 	protected static function create($model) {
 		// Get the Aurora_ class for this model
-		$au = Aurora_Type::aurora($model);
+		$au = static::factory($model, 'aurora');
 		// Get the $row array from Aurora_ to be inserted
-		$row = $au::db_from_model($model);
+		$row = $au->db_from_model($model);
 		// Run the insert query
 		$result = Aurora_Database::insert($au, $row);
 		if ($result) {
@@ -222,9 +222,9 @@ class Aurora_Aurora_Core
 	 */
 	protected static function update($model) {
 		// Get the Aurora_ class for this model
-		$au = Aurora_Type::aurora($model);
+		$au = static::factory($model, 'aurora');
 		// Get the $row array from Aurora_ to be inserted
-		$row = $au::db_from_model($model);
+		$row = $au->db_from_model($model);
 		$pk = Aurora_Property::get_pkey($model);
 		// Run the update query
 		Aurora_Database::update($au, $row, $pk);
