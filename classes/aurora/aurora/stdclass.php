@@ -59,9 +59,15 @@ class Aurora_Aurora_StdClass
 	 * @return Model
 	 */
 	public static function to_model($stdObj, $model) {
-		$model = (is_string($model)) ? Aurora_Core::factory($model) : $model;
-		$au = Aurora_Type::aurora($model);
-		// Get the list of properties
+		$model = is_string($model) ? Aurora_Core::factory($model, 'model') : $model;
+		if (!Aurora_Type::is_model($model))
+			throw new InvalidArgumentException('Can not proceed conversion. $model is not a valid Model');
+		$au = Aurora_Core::factory($model, 'aurora');
+		// set primary key
+		$pkey = Aurora_Database::pkey($au);
+		if (property_exists($stdObj, $pkey)) {
+			Aurora_Property::set_pkey($model, $stdObj->$pkey);
+		}  // Get the list of properties
 		$props = Aurora_Property::setters($model);
 		// loop through the list of props
 		foreach ($props as $prop => $arrProp) {
@@ -72,25 +78,18 @@ class Aurora_Aurora_StdClass
 			$value = $stdObj->$prop;
 			// if property is primary key
 			if ($prop == Aurora_Database::pkey($au)) {
-				Aurora_Property::set_pkey($model, $value);
+				// we already did this above
 				continue;
 			}
 			// if property is setter
-			if ($arrProp['type'] == 'method' AND $value != NULL) {
-			fire::dump('prop', $prop);
-			fire::dump('arrProp', $arrProp);
-			fire::dump('value', $value);
+			if ($arrProp['type'] == 'method' AND $value !== NULL) {
 				$setter = 'set_' . $prop;
 				$typehint = Aurora_Reflection::typehint($model, $setter);
 				$classname_only = TRUE;
-				fire::dump('typehint', $typehint);
 				if (Aurora_Type::is_collection($typehint, $classname_only)) {
 					$value = static::to_collection($value, $typehint);
-					fire::dump('typehint_is_collection', $typehint);
 				} else if (Aurora_Type::is_model($typehint, $classname_only)) {
-					fire::dump('typehint_model', 'success');
 					$value = static::to_model($value, $typehint);
-					fire::dump('typehint_is_model', $typehint);
 				}
 			}
 			Aurora_Property::set($model, $prop, $value);
@@ -120,7 +119,7 @@ class Aurora_Aurora_StdClass
 	 * @param Collection/string $collection
 	 * @return Collection
 	 */
-	public static function to_collection(array $std_array, $collection) {
+	public static function to_collection($std_array, $collection) {
 		if (is_string($collection))
 			$collection = Aurora_Core::factory($collection, 'collection');
 		/* @var $collection Collection */
