@@ -4,7 +4,6 @@ defined('SYSPATH') or die('No direct script access.');
 
 /**
  * Utility class for finding related Models, Collections, "Aurora_" classes
- * @TODO as well as Controllers.
  *
  *
  * @package Aurora
@@ -88,11 +87,14 @@ class Aurora_Aurora_Type
 	 * @param mixed $object
 	 * @return boolean
 	 */
-	public static function is_aurora($object) {
+	public static function is_aurora($object, $classname_only = false) {
 		$pattern = '/^Aurora_/';
-		return
-		  preg_match($pattern, static::classname($object)) and
-		  $object instanceof Aurora_Interface;
+		if ($classname_only)
+			return preg_match($pattern, static::classname($object));
+		else
+			return
+			  preg_match($pattern, static::classname($object)) AND
+			  $object instanceof Aurora_Interface;
 	}
 	/**
 	 * Test if $object is a Model
@@ -100,9 +102,14 @@ class Aurora_Aurora_Type
 	 * @param mixed $object
 	 * @return boolean
 	 */
-	public static function is_model($object) {
+	public static function is_model($object, $classname_only = false) {
 		$pattern = '/^Model_/';
-		return preg_match($pattern, static::classname($object));
+		if ($classname_only)
+			return preg_match($pattern, static::classname($object));
+		else
+			return
+			  preg_match($pattern, static::classname($object)) AND
+			  is_object($object);
 	}
 	/**
 	 * Test if $object is a Collection
@@ -110,11 +117,14 @@ class Aurora_Aurora_Type
 	 * @param mixed $object
 	 * @return boolean
 	 */
-	public static function is_collection($object) {
+	public static function is_collection($object, $classname_only = false) {
 		$pattern = '/^Collection_/';
-		return
-		  preg_match($pattern, static::classname($object)) AND
-		  $object instanceof Aurora_Collection;
+		if ($classname_only)
+			return preg_match($pattern, static::classname($object));
+		else
+			return
+			  preg_match($pattern, static::classname($object)) AND
+			  $object instanceof Aurora_Collection;
 	}
 	/**
 	 * Test if $object is a Controller_API
@@ -122,10 +132,13 @@ class Aurora_Aurora_Type
 	 * @param mixed $object
 	 * @return boolean
 	 */
-	public static function is_controller($object) {
+	public static function is_controller($object, $classname_only = false) {
 		$pattern = '/^Controller_API_/';
-		return
-		  preg_match($pattern, static::classname($object)) AND
-		  $object instanceof Controller_API;
+		if ($classname_only)
+			return preg_match($pattern, static::classname($object));
+		else
+			return
+			  preg_match($pattern, static::classname($object)) AND
+			  $object instanceof Controller_API;
 	}
 }
