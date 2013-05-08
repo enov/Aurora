@@ -41,7 +41,7 @@ class Aurora_Controller_API extends Controller_REST
 	 *
 	 * @var string
 	 */
-	protected $_common_name;
+	protected $cname;
 	/**
 	 * Overrided krestful Restful_Controller
 	 * @var array
@@ -60,28 +60,28 @@ class Aurora_Controller_API extends Controller_REST
 	protected $_accept_strict	 = TRUE;
 	public function __construct(Request $request, Response $response, array $accept = NULL, array $accept_charset = NULL, array $accept_language = NULL, array $accept_strict = NULL) {
 		parent::__construct($request, $response, $accept, $accept_charset, $accept_language, $accept_strict);
-		$this->_common_name = $request->param('common_name', str_ireplace('Controller_API_', '', get_called_class()));
+		$this->cname = Au::type()->cname($this);
 	}
 	public function action_index() {
 		$id		 = $this->request->param('id', NULL);
-		$m_or_c	 = Au::load($this->_common_name, $id);
+		$m_or_c	 = Au::load($this->cname, $id);
 		$view = Au::json_encode($m_or_c);
 		$this->response->body($view->render());
 	}
 	public function action_create() {
-		$m = Au::json_decode($this->_common_name, $this->request->body());
+		$m = Au::json_decode($this->cname, $this->request->body());
 		Au::save($m);
 		$view = Au::json_encode($m);
 		$this->response->body($view);
 	}
 	public function action_update() {
-		$m = Au::json_decode($this->_common_name, $this->request->body());
+		$m = Au::json_decode($this->cname, $this->request->body());
 		Au::save($m);
 		$view = Au::json_encode($m);
 		$this->response->body($view);
 	}
 	public function action_delete() {
-		$m = Au::load($this->_common_name, $id);
+		$m = Au::load($this->cname, $id);
 		if (Au::is_new($m))
 			throw new HTTP_Exception_500('Model not loaded. Can not delete');
 		Au::delete($m);
