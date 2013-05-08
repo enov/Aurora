@@ -111,6 +111,8 @@ class Aurora_Aurora_Core
 	 * @return Model/Collection
 	 */
 	public static function load($object, $params = NULL) {
+		if (is_null($params))
+			$mode = 'collection';
 		if (is_scalar($params))
 			$mode = 'model';
 		if (Aurora_Type::is_model($object))
