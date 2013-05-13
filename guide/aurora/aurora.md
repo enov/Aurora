@@ -10,13 +10,13 @@ However, you are required to implement the Aurora_Interface:
 
     class Aurora_Person extends Model_Person implements Aurora_Interface
     {
-		public static function db_from_model($model){
+		public static function db_persist($model){
 			return array(
 				'id' => $model->id,
 				'name' => $model->name,
 			);
 		}
-		public static function db_to_model($model, array $row){
+		public static function db_retrieve($model, array $row){
 			$model->id = $row['persons.id'];
 			$model->name = $row['persons.name'];
 		}
@@ -35,7 +35,7 @@ Defaults to: default
 [!!] Aurora has a hacked version of Kohana_Database_PDO where it allows
 to have "namespaced" / or "fully-qualified" column names, that is
 table names along the column names, separated with a dot. You can see
-an example of this in the example **db_to_model** function above. You
+an example of this in the example **db_retrieve** function above. You
 need to add a configuration flag in the config group of the database.
 An example of a database config group is available with the module.
 
@@ -77,7 +77,7 @@ is rather a hard-coded Database_Query representing a database view as in say
 
 You can have a complex query view with multiple table joined together. As
 column names can be separated by table names, you can easily populate your
-Models property in **db_to_model**.
+Models property in **db_retrieve**.
 
 Defaults to: DB::select()->from(static::$table)
 

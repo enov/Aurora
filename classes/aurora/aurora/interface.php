@@ -13,5 +13,5 @@
 interface Aurora_Aurora_Interface
 {
 	public function db_persist($model);
-	public function db_retreive($model, array $row);
+	public function db_retrieve($model, array $row);
 }

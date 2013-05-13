@@ -32,9 +32,9 @@
 class Aurora_Controller_API extends Controller_REST
 {
 
-	protected $expire		 = true;
-	protected $authenticate	 = true;
-	protected $autorize		 = true;
+	protected $expire = true;
+	protected $authenticate = true;
+	protected $autorize = true;
 	/**
 	 * Used to construct the respective Model_(_common_name) & Collection_(_common_name)
 	 * by convention the controller should be called Controller_API_(_common_name)
@@ -46,10 +46,10 @@ class Aurora_Controller_API extends Controller_REST
 	 * Overrided krestful Restful_Controller
 	 * @var array
 	 */
-	protected $_accept		 = array(
+	protected $_accept = array(
 		'application/json'
 	);
-	protected $_accept_lang	 = array(
+	protected $_accept_lang = array(
 		'en_US',
 		'en_GB'
 	);
@@ -57,14 +57,15 @@ class Aurora_Controller_API extends Controller_REST
 		'utf-8',
 		'ISO-8859-1'
 	);
-	protected $_accept_strict	 = TRUE;
+	protected $_accept_strict = TRUE;
 	public function __construct(Request $request, Response $response, array $accept = NULL, array $accept_charset = NULL, array $accept_language = NULL, array $accept_strict = NULL) {
 		parent::__construct($request, $response, $accept, $accept_charset, $accept_language, $accept_strict);
 		$this->cname = Au::type()->cname($this);
 	}
 	public function action_index() {
-		$id		 = $this->request->param('id', NULL);
-		$m_or_c	 = Au::load($this->cname, $id);
+		$cname = Au::type()->cname($this);
+		$id = $this->request->param('id', NULL);
+		$m_or_c = Au::load($this->cname, $id);
 		$view = Au::json_encode($m_or_c);
 		$this->response->body($view->render());
 	}

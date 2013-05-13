@@ -133,13 +133,13 @@ class Aurora_Aurora_Core
 			if (!$count)
 				return false;
 			$model = is_object($object) ? $object : static::factory($object, 'model');
-			$au->db_retreive($model, $result[0]);
+			$au->db_retrieve($model, $result[0]);
 			return $model;
 		} else {
 			$collection = is_object($object) ? $object : static::factory($object, 'collection');
 			foreach ($result as $row) {
 				$model = static::factory($object, 'model');
-				$au->db_retreive($model, $row);
+				$au->db_retrieve($model, $row);
 				$collection->add($model);
 			}
 			return $collection;
