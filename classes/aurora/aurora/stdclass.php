@@ -42,7 +42,7 @@ class Aurora_Aurora_StdClass
 			}
 			// Special care for DateTime. Is this generally acceptable?
 			else if ($value instanceof DateTime) {
-				$std->$prop = Date::format_iso8601($value);
+				$std->$prop = $value->format(DATE_ISO8601);
 			}
 			// if scalar?
 			else {
@@ -90,6 +90,8 @@ class Aurora_Aurora_StdClass
 					$value = static::to_collection($value, $typehint);
 				} else if (Aurora_Type::is_model($typehint, $classname_only)) {
 					$value = static::to_model($value, $typehint);
+				} else if ($typehint === 'DateTime') {
+					$value = new DateTime($value);
 				}
 			}
 			Aurora_Property::set($model, $prop, $value);
