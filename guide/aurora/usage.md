@@ -44,7 +44,7 @@ or
 
 ## Main JSON API
 
-### Au::json_encode()
+### Au::json_encode() or Aurora::factory()->json_encode()
 
 Encode your Model or your Collection to JSON. This returns a Kohana View.
 
@@ -55,7 +55,7 @@ Example:
 	$view = Au::json_encode($person);
 	$this->response->body($view->render());
 
-### Au::json_decode()
+### Au::json_decode() or Aurora::factory()->json_decode()
 
 Decode your Model or your Collection from JSON.
 
