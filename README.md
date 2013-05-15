@@ -26,17 +26,15 @@ Aurora is a Kohana module that helps you
 
 Installation
 ------------
-Aurora is currently dependant on krestful from @samsoir. You will find a forked
-krestful project that works with Aurora.
 
-In your bootstrap.php, please enable Aurora and krestful:
+Aurora is a Kohana module. Copy Aurora into your modules folder and enable it
+in your bootstrap.php:
 
 	/**
 	 * Enable modules. Modules are referenced by a relative or absolute path.
 	 */
 	Kohana::modules(array(
 		'aurora'		=> MODPATH.'aurora',		// Aurora module
-		'krestful'		=> MODPATH.'krestful',		// Krestful module
 		...
 	));
 
