@@ -111,6 +111,10 @@ class Aurora_Aurora_Core
 	 * @return Model/Collection
 	 */
 	public static function load($object, $params = NULL) {
+		// Get the Aurora_ class for this object
+		$au = Aurora_Type::is_aurora($object) ? $object : static::factory($object, 'aurora');
+		// run hook if exists
+		Aurora_Hook::call($au, 'before_load', $params);
 		if (is_null($params))
 			$mode = 'collection';
 		if (is_scalar($params))
@@ -119,8 +123,6 @@ class Aurora_Aurora_Core
 			$mode = 'model';
 		if (Aurora_Type::is_collection($object))
 			$mode = 'collection';
-		// Get the Aurora_ class for this model
-		$au = Aurora_Type::is_aurora($object) ? $object : static::factory($object, 'aurora');
 		// Run select query
 		$result = Aurora_Database::select($au, $params);
 		$count = count($result);
@@ -131,9 +133,11 @@ class Aurora_Aurora_Core
 
 		if ($mode == 'model') {
 			if (!$count)
+				Aurora_Hook::call($au, 'after_load', FALSE);
 				return false;
 			$model = is_object($object) ? $object : static::factory($object, 'model');
 			$au->db_retrieve($model, $result[0]);
+			Aurora_Hook::call($au, 'after_load', $model);
 			return $model;
 		} else {
 			$collection = is_object($object) ? $object : static::factory($object, 'collection');
@@ -142,6 +146,7 @@ class Aurora_Aurora_Core
 				$au->db_retrieve($model, $row);
 				$collection->add($model);
 			}
+			Aurora_Hook::call($au, 'after_load', $collection);
 			return $collection;
 		}
 	}
@@ -190,7 +195,7 @@ class Aurora_Aurora_Core
 			throw new Kohana_Exception('Can not delete a new Model.');
 		// Get the Aurora_ class for this model
 		$au = static::factory($object, 'aurora');
-		// Get the $pk (the ID) of the $model
+		// Get the value $pk (the ID) of the $model
 		$pk = Aurora_Property::get_pkey($object);
 		// Run the delete query
 		return Aurora_Database::delete($au, $pk);
@@ -225,6 +230,7 @@ class Aurora_Aurora_Core
 		$au = static::factory($model, 'aurora');
 		// Get the $row array from Aurora_ to be inserted
 		$row = $au->db_persist($model);
+		// Get the value $pk (the ID) of the $model
 		$pk = Aurora_Property::get_pkey($model);
 		// Run the update query
 		Aurora_Database::update($au, $row, $pk);
