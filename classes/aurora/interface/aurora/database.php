@@ -10,7 +10,7 @@
  * @license http://license.enov.ws/mit MIT
  *
  */
-interface Aurora_Aurora_Interface
+interface Interface_Aurora_Database
 {
 	public function db_persist($model);
 	public function db_retrieve($model, array $row);
