@@ -14,6 +14,29 @@ defined('SYSPATH') or die('No direct script access.');
 class Aurora_Aurora_Core
 {
 	/**
+	 * Aurora custom auto-loader
+	 *
+	 * In order not to end up with lots of files
+	 *
+	 * Special treatment for Collections and Auroras
+	 *
+	 * @see Kohana_Core::auto_load
+	 * @param string $class
+	 */
+	public static function auto_load($class) {
+		// This is only for Auroras and Collections. A test before proceeding
+		$test_classname_only = TRUE;
+		if (
+		  !Aurora_Type::is_aurora($class, $test_classname_only) AND
+		  !Aurora_Type::is_collection($class, $test_classname_only)
+		)
+			return FALSE;
+		// change the class name to model classname
+		$class = Aurora_Type::model($class);
+		// Call standard Kohana auto-loading mechanism
+		Kohana::auto_load($class);
+	}
+	/**
 	 * Get a Kohana View with the JSON representation
 	 * of your model or Collection
 	 *
@@ -134,7 +157,7 @@ class Aurora_Aurora_Core
 		if ($mode == 'model') {
 			if (!$count)
 				Aurora_Hook::call($au, 'after_load', FALSE);
-				return false;
+			return false;
 			$model = is_object($object) ? $object : static::factory($object, 'model');
 			$au->db_retrieve($model, $result[0]);
 			Aurora_Hook::call($au, 'after_load', $model);
@@ -236,5 +259,4 @@ class Aurora_Aurora_Core
 		Aurora_Database::update($au, $row, $pk);
 		return $model;
 	}
-
 }
