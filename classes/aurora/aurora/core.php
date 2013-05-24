@@ -87,11 +87,19 @@ class Aurora_Aurora_Core
 	 *     Aurora_Type::is_model($object); // is_collection($object)
 	 *
 	 * @param string $common_name
-	 * @param string $json The JSON string to convert from
+	 * @param string $json_str The JSON string to convert from
 	 * @return Model/Collection
 	 */
-	public static function json_decode($common_name, $json) {
-		$json = json_decode($json);
+	public static function json_decode($common_name, $json_str) {
+		// Get the Aurora_ class for this object
+		$au = static::factory($common_name, 'aurora');
+		// run before hook if exists
+		Aurora_Hook::call($au, 'before_json_decode', $json_str);
+
+		// convert to JSON string to stdClass or array
+		$json = json_decode($json_str);
+
+		// process: convert json to model or collection
 		return (is_array($json)) ?
 		  // if JSON is array return Collection
 		  Aurora_StdClass::to_collection($json, Aurora_Type::collection($common_name)) :
@@ -136,8 +144,10 @@ class Aurora_Aurora_Core
 	public static function load($object, $params = NULL) {
 		// Get the Aurora_ class for this object
 		$au = Aurora_Type::is_aurora($object) ? $object : static::factory($object, 'aurora');
-		// run hook if exists
+		// run before hook if exists
 		Aurora_Hook::call($au, 'before_load', $params);
+		// find out mode:
+		// whether this function will load a model or a collection
 		if (is_null($params))
 			$mode = 'collection';
 		if (is_scalar($params))
@@ -169,6 +179,7 @@ class Aurora_Aurora_Core
 				$au->db_retrieve($model, $row);
 				$collection->add($model);
 			}
+			// run after hook if exists
 			Aurora_Hook::call($au, 'after_load', $collection);
 			return $collection;
 		}
@@ -181,6 +192,10 @@ class Aurora_Aurora_Core
 	 * @return Model/Collection
 	 */
 	public static function save($object) {
+		// Get the Aurora_ class for this object
+		$au = static::factory($object, 'aurora');
+		// run before hook if exists
+		Aurora_Hook::call($au, 'before_save', $object);
 		// deep save by looping through the collection
 		if (Aurora_Type::is_collection($object)) {
 			foreach ($object as $model) {
@@ -196,6 +211,8 @@ class Aurora_Aurora_Core
 			// if it has an ID update model in database
 			static::update($object);
 		}
+		// run after hook if exists
+		Aurora_Hook::call($au, 'after_save', $object);
 		return $object;
 	}
 	/**
@@ -207,6 +224,10 @@ class Aurora_Aurora_Core
 	 * @throws Kohana_Exception
 	 */
 	public static function delete($object) {
+		// Get the Aurora_ class for this object
+		$au = static::factory($object, 'aurora');
+		// run before hook if exists
+		Aurora_Hook::call($au, 'before_delete', $object);
 		// deep delete by looping through the collection
 		if (Aurora_Type::is_collection($object)) {
 			foreach ($object as $model) {
@@ -216,12 +237,14 @@ class Aurora_Aurora_Core
 		// Test if $model is_new and throw exception if TRUE
 		if (static::is_new($object))
 			throw new Kohana_Exception('Can not delete a new Model.');
-		// Get the Aurora_ class for this model
-		$au = static::factory($object, 'aurora');
 		// Get the value $pk (the ID) of the $model
 		$pk = Aurora_Property::get_pkey($object);
 		// Run the delete query
-		return Aurora_Database::delete($au, $pk);
+		$result = Aurora_Database::delete($au, $pk);
+		// run after hook if exists
+		Aurora_Hook::call($au, 'after_delete', $object);
+		// return result
+		return $result;
 	}
 	/**
 	 * Inserts a model to the database
@@ -232,6 +255,8 @@ class Aurora_Aurora_Core
 	protected static function create($model) {
 		// Get the Aurora_ class for this model
 		$au = static::factory($model, 'aurora');
+		// run before hook if exists
+		Aurora_Hook::call($au, 'before_create', $model);
 		// Get the $row array from Aurora_ to be inserted
 		$row = $au->db_persist($model);
 		// Run the insert query
@@ -240,6 +265,9 @@ class Aurora_Aurora_Core
 			$inserted_id = $result[0];
 			Aurora_Property::set_pkey($model, $inserted_id);
 		}
+		// run after hook if exists
+		Aurora_Hook::call($au, 'after_create', $model);
+		// return $model
 		return $model;
 	}
 	/**
@@ -251,12 +279,17 @@ class Aurora_Aurora_Core
 	protected static function update($model) {
 		// Get the Aurora_ class for this model
 		$au = static::factory($model, 'aurora');
+		// run before hook if exists
+		Aurora_Hook::call($au, 'before_update', $model);
 		// Get the $row array from Aurora_ to be inserted
 		$row = $au->db_persist($model);
 		// Get the value $pk (the ID) of the $model
 		$pk = Aurora_Property::get_pkey($model);
 		// Run the update query
 		Aurora_Database::update($au, $row, $pk);
+		// run after hook if exists
+		Aurora_Hook::call($au, 'after_update', $model);
+		// return $model
 		return $model;
 	}
 }
