@@ -15,7 +15,14 @@
 abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayAccess
 {
 
+	/**
+	 *
+	 * @var string hold the type of model
+	 */
 	protected $_valueType;
+	/**
+	 * @var array store internal data
+	 */
 	protected $_collection = array();
 	/**
 	 * Construct a new typed collection
@@ -40,42 +47,46 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 		return new $class;
 	}
 	/**
-	 * Add a value into the collection
-	 * @param mixed $value
-	 * @throws InvalidArgumentException when wrong type
-	 */
-	public function add($value) {
-		return $this->offsetSet(NULL, $value);
-	}
-	/**
-	 * Add a value into the collection
-	 * by performing an array_unshift
-	 * to the underlying $_collection array
+	 * Get Model from Collection given ID
 	 *
-	 * @param mixed $value
-	 * @throws InvalidArgumentException when wrong type
-	 * @return int the new number of elements in the collection.
+	 * @param type $id
 	 */
-	public function unshift($value) {
-		if (!$this->valid_type($value))
-			throw new InvalidArgumentException('Trying to add a value of wrong type');
-		return array_unshift($this->_collection, $value);
+	public function get($id) {
+		foreach ($this->_collection as $model) {
+			if (Aurora_Property::get_pkey($model) === $id)
+				return $model;
+		}
+		return NULL;
 	}
 	/**
-	 * Remove a value from the collection
-	 * @param integer $index index to remove
+	 * Add a value into the collection
+	 * @param Model $model
+	 * @throws InvalidArgumentException when wrong type
+	 */
+	public function add($model) {
+		if ($this->exists(Aurora_Property::get_pkey($model)))
+			return FALSE;
+		return $this->offsetSet(NULL, $model);
+	}
+	/**
+	 * Remove a model from the collection
+	 * @param integer $id id of model to remove
 	 * @throws OutOfRangeException if index is out of range
 	 */
-	public function remove($index) {
-		return $this->offsetUnset($index);
+	public function remove($id) {
+		foreach ($this->_collection as $offSet => $model) {
+			if (Aurora_Property::get_pkey($model) === $id)
+				return $this->offsetUnset($offSet);
+		}
+		return FALSE;
 	}
 	/**
 	 * Determine if index exists
 	 * @param integer $index
 	 * @return boolean
 	 */
-	public function exists($index) {
-		return $this->offsetExists($index);
+	public function exists($id) {
+		return !is_null($this->get($id));
 	}
 	/**
 	 * Return count of items in collection
@@ -121,6 +132,8 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	public function offsetSet($offset, $value) {
 		if (!$this->valid_type($value))
 			throw new InvalidArgumentException('Trying to add a value of wrong type');
+		if (is_string($offset) AND $this->offsetExists($offset))
+			throw new InvalidArgumentException('Trying to add a model that already exists');
 		if (is_null($offset)) {
 			$this->_collection[] = $value;
 		} else {
@@ -136,7 +149,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 */
 	public function offsetUnset($offset) {
 		unset($this->_collection[$offset]);
-		return true;
+		return TRUE;
 	}
 	/**
 	 * get an offset's value
