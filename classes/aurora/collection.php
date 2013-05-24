@@ -132,8 +132,6 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	public function offsetSet($offset, $value) {
 		if (!$this->valid_type($value))
 			throw new InvalidArgumentException('Trying to add a value of wrong type');
-		if (is_string($offset) AND $this->offsetExists($offset))
-			throw new InvalidArgumentException('Trying to add a model that already exists');
 		if (is_null($offset)) {
 			$this->_collection[] = $value;
 		} else {
