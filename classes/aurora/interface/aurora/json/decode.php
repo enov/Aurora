@@ -1,6 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
+
 /**
- * 
+ *
  *
  * @package Aurora
  * @author Samuel Demirdjian
@@ -10,5 +11,5 @@
  */
 interface Interface_Aurora_JSON_Decode
 {
-
+	public function json_decode($json_str);
 }

@@ -51,6 +51,12 @@ class Aurora_Aurora_Core
 	 * @throws View_Exception
 	 */
 	public static function json_encode($object) {
+		// Get the Aurora_ class for this object
+		$au = static::factory($object, 'aurora');
+		// test if it implements json_encode
+		if ($au instanceof Interface_Aurora_JSON_Encode)
+			return $au->json_encode($object);
+
 		// Set the mode of the representation
 		if (Aurora_Type::is_model($object)) {
 			$mode = 'model';
@@ -93,8 +99,9 @@ class Aurora_Aurora_Core
 	public static function json_decode($common_name, $json_str) {
 		// Get the Aurora_ class for this object
 		$au = static::factory($common_name, 'aurora');
-		// run before hook if exists
-		Aurora_Hook::call($au, 'before_json_decode', $json_str);
+		// test if it implements json_decode
+		if ($au instanceof Interface_Aurora_JSON_Decode)
+			return $au->json_decode($json_str);
 
 		// convert to JSON string to stdClass or array
 		$json = json_decode($json_str);
