@@ -58,10 +58,13 @@ class Aurora_Controller_API extends Controller_REST
 		if (is_null($id))
 			throw new HTTP_Exception_404('Model does not exists');
 		$m = Au::load($cname, $id);
-		if (Au::is_new($m))
-			throw new HTTP_Exception_500('Model not loaded. Can not delete');
 		Au::delete($m);
 		$view = Au::json_encode($m);
 		$this->response->body($view);
 	}
+	public function after() {
+		$this->response->headers('Content-type', 'application/json');
+		parent::after();
+	}
+
 }
