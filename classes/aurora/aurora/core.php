@@ -37,81 +37,91 @@ class Aurora_Aurora_Core
 		Kohana::auto_load($class);
 	}
 	/**
-	 * Get a Kohana View with the JSON representation
-	 * of your model or Collection
-	 *
-	 *     // Get the JSON view
-	 *     $view = AU::json_encode($model);
-	 *
-	 *     // render the view
-	 *     $this->response->body($view->render());
+	 * JSON encode a Model or a Collection
 	 *
 	 * @param Model/Collection $object
-	 * @return View a Kohana View with JSON rendered object
-	 * @throws View_Exception
+	 * @return string
 	 */
 	public static function json_encode($object) {
+		// serialize Model or Colleciton into encodeable object
+		$json_obj = static::json_serialize($object);
+		// encode the serialized object
+		return json_encode($json_obj);
+	}
+	/**
+	 * JSON decode a JSON string into a Model or a Collection
+	 *
+	 * @param Model/Collection $object
+	 * @return string
+	 */
+	public static function json_decode($json_str, $type) {
+		// decode the json_str to a stdClass or array
+		$json_obj = json_decode($json_str);
+		// Deserialize decoded object into Model or Colleciton
+		return static::json_deserialize($json_obj, $type);
+	}
+	/**
+	 * Get a json_encodable object from Model or Collection
+	 * Delegates to Aurora if custom implementation exists
+	 *
+	 * usage:
+	 *
+	 *     // Get the JSON object of type stdClass or array of stdClass
+	 *     $json_obj = AU::json_serialize($model);
+	 *     // encode to string
+	 *     $json_str = json_encode($json_obj);
+	 *     // output
+	 *     $this->response->body($json_str);
+	 *
+	 * @param Model/Collection $object
+	 * @return mixed a json_encodable object, probably a stdClass
+	 * @throws InvalidArgumentException if $object is not a model or collection
+	 */
+	public static function json_serialize($object) {
 		// Get the Aurora_ class for this object
 		$au = static::factory($object, 'aurora');
-		// test if it implements json_encode
-		if ($au instanceof Interface_Aurora_JSON_Encode)
-			return $au->json_encode($object);
+		// test if it implements json_serialize
+		if ($au instanceof Interface_Aurora_JSON_Serialize)
+			return $au->json_serialize($object);
 
-		// Set the mode of the representation
+		// Set the mode of the serialization
 		if (Aurora_Type::is_model($object)) {
-			$mode = 'model';
+			$mode = 'from_model';
 		} else if (Aurora_Type::is_collection($object)) {
-			$mode = 'collection';
+			$mode = 'from_collection';
 		} else {
-			throw new View_Exception("Variable not an instance of Model or Collection");
+			throw new InvalidArgumentException("Variable not an instance of Model or Collection");
 		}
-		// Find the custom view file for object representation
-		// if custom file is not set use default
-		$classname = Aurora_Type::classname($object);
-		$custom_view = str_replace('_', '/', strtolower($classname));
-		$default_view = "aurora/json/$mode";
-		$file = Kohana::find_file('views', $custom_view) ? $custom_view : $default_view;
-		// Prepare the data to pass to the view
-		$data = array($mode => $object);
-		// Create the View and return it
-		return View::factory($file, $data);
+		// Return an stdClass or an array of stdClass
+		return Aurora_StdClass::$mode($object);
 	}
 	/**
 	 * Convert from JSON to Model or Collection
 	 *
 	 *     // for example, if $json_string = '{ id: 3, ... }';
-	 *     // Get the model from JSON string
-	 *     $model = AU::json_decode("Calendar_Event", $json_string);
+	 *     // Decode from JSON string
+	 *     $json = json_decode($json_string);
 	 *
-	 *     // else if $json_string = '[{ id: 3, ... }, ...]';
-	 *     // get the collection from JSON string
-	 *     $collection = AU::json_decode("Calendar_Event", $json_string);
+	 *     // OR just convert to $object of type Model or Collection
+	 *     $object = AU::json_deserialize("Calendar_Event", $json);
 	 *
-	 *     // OR just convert to $object
-	 *     $object = AU::json_decode("Calendar_Event", $json_string);
-	 *     // then test
-	 *     Aurora_Type::is_model($object); // is_collection($object)
-	 *
-	 * @param string $common_name
-	 * @param string $json_str The JSON string to convert from
+	 * @param stdClass/array $json The JSON object of type stdClass or array of stdClass
+	 * @param string/Aurora $type The type to serialize into the $json object
 	 * @return Model/Collection
 	 */
-	public static function json_decode($common_name, $json_str) {
+	public static function json_deserialize($json, $type) {
 		// Get the Aurora_ class for this object
-		$au = static::factory($common_name, 'aurora');
+		$au = Aurora_Type::is_aurora($type) ? $type : static::factory($type, 'aurora');
 		// test if it implements json_decode
-		if ($au instanceof Interface_Aurora_JSON_Decode)
-			return $au->json_decode($json_str);
-
-		// convert to JSON string to stdClass or array
-		$json = json_decode($json_str);
+		if ($au instanceof Interface_Aurora_JSON_Deserialize)
+			return $au->json_deserialize($json);
 
 		// process: convert json to model or collection
 		return (is_array($json)) ?
 		  // if JSON is array return Collection
-		  Aurora_StdClass::to_collection($json, Aurora_Type::collection($common_name)) :
+		  Aurora_StdClass::to_collection($json, Aurora_Type::collection($type)) :
 		  // otherwise (if it is of type stdClass) return Model
-		  Aurora_StdClass::to_model($json, Aurora_Type::model($common_name));
+		  Aurora_StdClass::to_model($json, Aurora_Type::model($type));
 	}
 	/**
 	 * Check if your Model has an ID.

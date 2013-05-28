@@ -3,15 +3,18 @@
 /**
  * Interface for custom JSON decoding.
  *
- * Note that you can also create a View in the views folder
- *
  * @package Aurora
  * @author Samuel Demirdjian
  * @copyright (c) 2013, Samuel Demirdjian
  * @license http://license.enov.ws/mit MIT
  *
  */
-interface Interface_Aurora_JSON_Decode
+interface Interface_Aurora_JSON_Deserialize
 {
-	public function json_decode($json_str);
+	/**
+	 *
+	 * @param stdClass/array $json a stdClass or an array of stdClass
+	 * @return Model/Collection Deserialized Model or Collection
+	 */
+	public function json_deserialize($json);
 }

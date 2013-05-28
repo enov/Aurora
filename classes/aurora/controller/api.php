@@ -35,22 +35,22 @@ class Aurora_Controller_API extends Controller_REST
 		$cname = Au::type()->cname($this);
 		$id = $this->request->param('id', NULL);
 		$m_or_c = Au::load($cname, $id);
-		$view = Au::json_encode($m_or_c);
-		$this->response->body($view->render());
+		$json_str = Au::json_encode($m_or_c);
+		$this->response->body($json_str);
 	}
 	public function action_create() {
 		$cname = Au::type()->cname($this);
-		$m = Au::json_decode($cname, $this->request->body());
+		$m = Au::json_decode($this->request->body(), $cname);
 		Au::save($m);
-		$view = Au::json_encode($m);
-		$this->response->body($view);
+		$json_str = Au::json_encode($m);
+		$this->response->body($json_str);
 	}
 	public function action_update() {
 		$cname = Au::type()->cname($this);
-		$m = Au::json_decode($cname, $this->request->body());
+		$m = Au::json_decode($this->request->body(), $cname);
 		Au::save($m);
-		$view = Au::json_encode($m);
-		$this->response->body($view);
+		$json_str = Au::json_encode($m);
+		$this->response->body($json_str);
 	}
 	public function action_delete() {
 		$cname = Au::type()->cname($this);
@@ -61,8 +61,8 @@ class Aurora_Controller_API extends Controller_REST
 		if ($m == FALSE)
 			throw new HTTP_Exception_404('Model does not exists');
 		Au::delete($m);
-		$view = Au::json_encode($m);
-		$this->response->body($view);
+		$json_str = Au::json_encode($m);
+		$this->response->body($json_str);
 	}
 	public function after() {
 		$this->response->headers('Content-type', 'application/json');
