@@ -1,7 +1,9 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 /**
+ * Interface for custom JSON decoding.
  *
+ * Note that you can also create a View in the views folder
  *
  * @package Aurora
  * @author Samuel Demirdjian
