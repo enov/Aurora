@@ -173,8 +173,8 @@ class Aurora_Aurora_Core
 
 		if ($mode == 'model') {
 			if (!$count)
-				Aurora_Hook::call($au, 'after_load', FALSE);
-			return false;
+			// should we Aurora_Hook::call($au, 'after_load', FALSE)? if no result?
+				return false;
 			$model = is_object($object) ? $object : static::factory($object, 'model');
 			$au->db_retrieve($model, $result[0]);
 			Aurora_Hook::call($au, 'after_load', $model);
