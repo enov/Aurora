@@ -54,6 +54,9 @@ abstract class Aurora_BetterCollection extends Aurora_Collection
 	 * @param type $id
 	 */
 	public function get($id) {
+		$offset = $this->get_offset($id);
+		if ($this->offsetExists($offset))
+			return $this->offsetGet($offset);
 		foreach ($this->_collection as $model) {
 			if (Aurora_Property::get_pkey($model) === $id)
 				return $model;
