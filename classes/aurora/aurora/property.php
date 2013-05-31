@@ -1,4 +1,7 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php
+
+defined('SYSPATH') or die('No direct script access.');
+
 /**
  * A set of functions to manage getters and setters
  * and make them act like standard properties
@@ -12,7 +15,8 @@
 class Aurora_Aurora_Property
 {
 
-	protected static $cache;
+	protected static $cache_prop;
+	protected static $cache_pkey;
 	/**
 	 * Get the list of all public properties
 	 * as well as the getters of your model
@@ -39,33 +43,33 @@ class Aurora_Aurora_Property
 		if ($dir != 'get' AND $dir != 'set')
 			throw new Kohana_Exception('direction should be either set or get');
 		// get the classname of the model
-		$classname	 = Aurora_Type::classname($model);
+		$classname = Aurora_Type::classname($model);
 		// test to see if we have it cached
-		if (isset(static::$cache[$dir][$classname]))
-			return static::$cache[$dir][$classname];
+		if (isset(static::$cache_prop[$dir][$classname]))
+			return static::$cache_prop[$dir][$classname];
 		// init the $properties array
-		$properties	 = array();
-		$pattern	 = "/^{$dir}_/";
+		$properties = array();
+		$pattern = "/^{$dir}_/";
 		// Loop over the class methods
 		foreach (get_class_methods($classname) as $method) {
 			$property = preg_replace($pattern, '', $method, 1, $count);
 			// if preg_replace successful, this is a getter/setter method
 			if ($count) {
 				$properties[$property] = array(
-					'type'	 => 'method',
-					'name'	 => $property,
+					'type' => 'method',
+					'name' => $property,
 				);
 			}
 		}
 		// Loop over the class properties (will override methods)
 		foreach (get_class_vars($classname) as $property) {
 			$properties[$property] = array(
-				'type'	 => 'property',
-				'name'	 => $property,
+				'type' => 'property',
+				'name' => $property,
 			);
 		}
 		// cache and return
-		return static::$cache[$dir][$classname] = $properties;
+		return static::$cache_prop[$dir][$classname] = $properties;
 	}
 	/**
 	 * Aurora "magic" (LOL) get for models
@@ -121,8 +125,14 @@ class Aurora_Aurora_Property
 	 * @return int/mixed
 	 */
 	public static function get_pkey($model) {
-		$au		 = Aurora_Type::aurora($model);
-		$pkey	 = Aurora_Database::pkey($au);
+		$classname = get_class($model);
+		if (isset(static::$cache_pkey[$classname])) {
+			$pkey = static::$cache_pkey[$classname];
+		} else {
+			$au = Aurora_Type::aurora($model);
+			$pkey = Aurora_Database::pkey($au);
+			static::$cache_pkey[$classname] = $pkey;
+		}
 		return static::get($model, $pkey);
 	}
 	/**
@@ -142,8 +152,8 @@ class Aurora_Aurora_Property
 	 * @return int/mixed
 	 */
 	public static function set_pkey($model, $value, $force = TRUE) {
-		$au		 = Aurora_Type::aurora($model);
-		$pkey	 = Aurora_Database::pkey($au);
+		$au = Aurora_Type::aurora($model);
+		$pkey = Aurora_Database::pkey($au);
 		try {
 			return static::set($model, $pkey, $value);
 		} catch (Exception $e) {
