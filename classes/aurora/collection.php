@@ -72,7 +72,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	public function add($model) {
 		if (!$this->valid_type($model))
 			throw new InvalidArgumentException('Trying to add a value of wrong type');
-		$id = Aurora_Property::get_pkey($value);
+		$id = Aurora_Property::get_pkey($model);
 		if ($this->exists($id))
 			throw new Kohana_Exception('Model with same id already exists');
 		$offset = Aurora_Core::is_new($value) ? NULL : $this->get_offset($id);
