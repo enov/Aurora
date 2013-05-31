@@ -25,14 +25,6 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 */
 	protected $_collection = array();
 	/**
-	 * Construct a new typed collection
-	 * @param string valueType collection value type
-	 */
-	public function __construct() {
-		// process according to the class name
-		$this->_valueType = Aurora_Type::model($this);
-	}
-	/**
 	 * Create a new collection instance.
 	 *
 	 *     $col = Collection::factory($name);
@@ -47,14 +39,28 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 		return new $class;
 	}
 	/**
+	 * Calculates offset given $id
+	 * @param mixed $id
+	 * @return mixed
+	 */
+	public function get_offset($id) {
+		if (empty($id))
+			return NULL;
+		return 's' . $id;
+	}
+	/**
 	 * Get Model from Collection given ID
 	 *
 	 * @param type $id
 	 */
 	public function get($id) {
-		foreach ($this->_collection as $model) {
-			if (Aurora_Property::get_pkey($model) === $id)
-				return $model;
+		$offset = $this->get_offset($id);
+		if ($this->offsetExists($offset))
+			return $this->offsetGet($offset);
+		foreach ($this->_collection as $offSet => $model) {
+			if (is_int($offSet))
+				if (Aurora_Property::get_pkey($model) === $id)
+					return $model;
 		}
 		return NULL;
 	}
@@ -64,9 +70,13 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 * @throws InvalidArgumentException when wrong type
 	 */
 	public function add($model) {
-		if ($this->exists(Aurora_Property::get_pkey($model)))
-			return FALSE;
-		return $this->offsetSet(NULL, $model);
+		if (!$this->valid_type($value))
+			throw new InvalidArgumentException('Trying to add a value of wrong type');
+		$id = Aurora_Property::get_pkey($value);
+		if ($this->exists($id))
+			throw new Kohana_Exception('Model with same id already exists');
+		$offset = Aurora_Core::is_new($value) ? NULL : $this->get_offset($id);
+		return $this->offsetSet($offset, $model);
 	}
 	/**
 	 * Remove a model from the collection
@@ -102,15 +112,12 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 * @return boolean
 	 */
 	public function valid_type($value) {
+		// lazy load instead of initializing in the constructor (performance hit?)
+		if (empty($this->_valueType))
+			$this->_valueType = Aurora_Type::model($this);
 		// instanceof works on interfaces as well as classes.
 		// It also checks the entire inheritance chain
 		return $value instanceof $this->_valueType;
-	}
-	/**
-	 * An alias of valid_type that exist for historical (B/C) reasons.
-	 */
-	public function isValidType($value) {
-		return $this->valid_type($value);
 	}
 	/**
 	 * Return an iterator
@@ -130,8 +137,6 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 * @return mixed the value set
 	 */
 	public function offsetSet($offset, $value) {
-		if (!$this->valid_type($value))
-			throw new InvalidArgumentException('Trying to add a value of wrong type');
 		if (is_null($offset)) {
 			$this->_collection[] = $value;
 		} else {
