@@ -75,7 +75,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 		$id = Aurora_Property::get_pkey($model);
 		if ($this->exists($id))
 			throw new Kohana_Exception('Model with same id already exists');
-		$offset = Aurora_Core::is_new($value) ? NULL : $this->get_offset($id);
+		$offset = Aurora_Core::is_new($model) ? NULL : $this->get_offset($id);
 		return $this->offsetSet($offset, $model);
 	}
 	/**
