@@ -70,7 +70,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 * @throws InvalidArgumentException when wrong type
 	 */
 	public function add($model) {
-		if (!$this->valid_type($value))
+		if (!$this->valid_type($model))
 			throw new InvalidArgumentException('Trying to add a value of wrong type');
 		$id = Aurora_Property::get_pkey($value);
 		if ($this->exists($id))
