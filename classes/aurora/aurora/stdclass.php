@@ -110,7 +110,7 @@ class Aurora_Aurora_StdClass
 		  // apply from_model
 		  array(get_called_class(), 'from_model'),
 		  // on each element of the internal array
-		  $collection->to_array()
+		  array_values($collection->to_array())
 		);
 	}
 	/**
