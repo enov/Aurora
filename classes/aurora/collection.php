@@ -25,6 +25,10 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 */
 	protected $_collection = array();
 	/**
+	 * @var bool true if collection contains unloaded (new) models
+	 */
+	protected $_is_dirty = FALSE;
+	/**
 	 * Create a new collection instance.
 	 *
 	 *     $col = Collection::factory($name);
@@ -55,13 +59,14 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 */
 	public function get($id) {
 		$offset = $this->get_offset($id);
-		if ($this->offsetExists($offset))
-			return $this->offsetGet($offset);
-		foreach ($this->_collection as $offSet => $model) {
-			if (is_int($offSet))
-				if (Aurora_Property::get_pkey($model) === $id)
-					return $model;
-		}
+		if (isset($this->_collection[$offset]))
+			return $this->_collection[$offset];
+		if ($this->_is_dirty)
+			foreach ($this->_collection as $offset => $model) {
+				if (is_int($offset))
+					if (Aurora_Property::get_pkey($model) === $id)
+						return $model;
+			}
 		return NULL;
 	}
 	/**
@@ -72,10 +77,17 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	public function add($model) {
 		if (!$this->valid_type($model))
 			throw new InvalidArgumentException('Trying to add a value of wrong type');
+		// Get model id
 		$id = Aurora_Property::get_pkey($model);
-		if ($this->exists($id))
+		// if empty $id, model is new, this collection is dirty
+		if (empty($id))
+			$this->_is_dirty = TRUE;
+		// do not allow to add a model if collection contains one with same id
+		else if ($this->exists($id))
 			throw new Kohana_Exception('Model with same id already exists');
-		$offset = Aurora_Core::is_new($model) ? NULL : $this->get_offset($id);
+		// calculate offset
+		$offset = empty($id) ? NULL : $this->get_offset($id);
+		// add to collection
 		return $this->offsetSet($offset, $model);
 	}
 	/**
@@ -84,10 +96,17 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 * @throws OutOfRangeException if index is out of range
 	 */
 	public function remove($id) {
-		foreach ($this->_collection as $offSet => $model) {
-			if (Aurora_Property::get_pkey($model) === $id)
-				return $this->offsetUnset($offSet);
-		}
+		// try to unset with the $offset
+		$offset = $this->get_offset($id);
+		if (isset($this->_collection[$offset]))
+			return $this->offsetUnset($offset);
+		// only loop the hard loop if collection is dirty
+		if ($this->_is_dirty)
+			foreach ($this->_collection as $offset => $model) {
+				if (Aurora_Property::get_pkey($model) === $id)
+					return $this->offsetUnset($offset);
+			}
+		// return FALSE if nothing to remove
 		return FALSE;
 	}
 	/**
@@ -96,7 +115,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 * @return boolean
 	 */
 	public function exists($id) {
-		return !is_null($this->get($id));
+		return isset($this->get($id));
 	}
 	/**
 	 * Return count of items in collection
@@ -137,7 +156,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 * @return mixed the value set
 	 */
 	public function offsetSet($offset, $value) {
-		if (is_null($offset)) {
+		if (!isset($offset)) {
 			$this->_collection[] = $value;
 		} else {
 			$this->_collection[$offset] = $value;
@@ -186,7 +205,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 * Get the underlying array
 	 * @return array
 	 */
-	public function to_array() {
+	public function &to_array() {
 		return $this->_collection;
 	}
 }
