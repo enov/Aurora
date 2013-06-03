@@ -190,11 +190,20 @@ class Aurora_Aurora_Core
 			Aurora_Hook::call($au, 'after_load', $model);
 			return $model;
 		} else {
+			/* @var $collection Aurora_Collection */
 			$collection = is_object($object) ? $object : static::factory($object, 'collection');
+			$model_name = Aurora_Type::model($object);
+			$array =& $collection->to_array();
+			$row_pkey = Aurora_Database::row_pkey($au);
 			foreach ($result as $row) {
-				$model = static::factory($object, 'model');
+				$pkey = $row[$row_pkey];
+				$offset = 's' . $pkey;
+				if (isset($array[$offset]))
+					$model = $array[$offset];
+				else
+					$model = new $model_name;
 				$au->db_retrieve($model, $row);
-				$collection->add($model);
+				$array[$offset] = $model;
 			}
 			// run after hook if exists
 			Aurora_Hook::call($au, 'after_load', $collection);

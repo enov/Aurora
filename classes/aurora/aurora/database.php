@@ -47,6 +47,22 @@ class Aurora_Aurora_Database
 		return isset($aurora->pkey) ? $aurora->pkey : 'id';
 	}
 	/**
+	 * Returns the key/index of the id in the database result row
+	 *
+	 * @return string
+	 */
+	public static function row_pkey($aurora) {
+		// prepare variables
+		$table = static::table($aurora);
+		$pkey = static::pkey($aurora);
+		$config = static::config($aurora);
+		// load database config
+		$config = Kohana::$config->load("database")->get($config);
+		// Getting the var
+		$fetch_table_names = Arr::path($config, 'connection.fetch_table_names', FALSE);
+		return $fetch_table_names ? $table . '.' . $pkey : $pkey;
+	}
+	/**
 	 * Main Query (DB View) to be used by the
 	 * Model and corresponding Collection
 	 *
