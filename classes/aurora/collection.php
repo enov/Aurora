@@ -115,7 +115,8 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 * @return boolean
 	 */
 	public function exists($id) {
-		return isset($this->get($id));
+		$model = $this->get($id);
+		return isset($model);
 	}
 	/**
 	 * Return count of items in collection
