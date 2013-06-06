@@ -150,7 +150,14 @@ class Aurora_Aurora_Property
 			$pkey = Aurora_Database::pkey($au);
 			static::$cache_pkey[$classname] = $pkey;
 		}
-		return static::get($model, $pkey);
+		if (isset($model->$pkey))
+			return $model->$pkey;
+		else {
+			$method = 'get_' . $pkey;
+			if (in_array($method, get_class_methods($model)))
+				return $model->$method();
+		}
+		throw new Kohana_Exception('Primary key not defined in model');
 	}
 	/**
 	 * A function to set the value of the ID
