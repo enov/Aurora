@@ -197,12 +197,11 @@ class Aurora_Aurora_Core
 			$row_pkey = Aurora_Database::row_pkey($au);
 			foreach ($result as $row) {
 				$pkey = $row[$row_pkey];
-				$offset = 's' . $pkey;
-				if (isset($array[$offset]))
-					$model = $array[$offset];
+				if (isset($array[$pkey]))
+					$model = $array[$pkey];
 				else {
 					$model = new $model_name;
-					$array[$offset] = $model;
+					$array[$pkey] = $model;
 				}
 				$au->db_retrieve($model, $row);
 			}
