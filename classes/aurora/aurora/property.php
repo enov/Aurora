@@ -154,7 +154,8 @@ class Aurora_Aurora_Property
 			return $model->$pkey;
 		else {
 			$method = 'get_' . $pkey;
-			if (in_array($method, get_class_methods($model)))
+			// do we need to test??? performance??
+			if (method_exists($model, $method) AND is_callable(array($model, $method)))
 				return $model->$method();
 		}
 		throw new Kohana_Exception('Primary key not defined in model');

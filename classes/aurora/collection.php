@@ -51,6 +51,9 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	public function get($id) {
 		if (empty($this->_pkey_property))
 			$this->_pkey_property = Aurora_Property::pkey_property($this->modelclass());
+		$model = $this->_collection[$id];
+		if (Aurora_Property::get_pkey($model) === $id)
+			return $model;
 		$pkey_prop = $this->_pkey_property['name'];
 		$pkey_method = 'get_' . $this->_pkey_property['name'];
 		foreach ($this->_collection as $offset => $model) {
@@ -75,7 +78,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	}
 	/**
 	 * Remove a model from the collection
-	 * 
+	 *
 	 * @param integer $id id of model to remove
 	 */
 	public function remove($id) {
