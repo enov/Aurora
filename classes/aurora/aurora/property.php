@@ -115,8 +115,25 @@ class Aurora_Aurora_Property
 		}
 	}
 	/**
-	 * A function to get the value of the ID
-	 * of the Model.
+	 * A function to get the DESCRIPTION of the ID
+	 * PROPERTY or GETTER of the Model
+	 *
+	 * @param Model $model
+	 */
+	public static function pkey_property($model) {
+		$classname = Aurora_Type::classname($model);
+		if (isset(static::$cache_pkey[$classname])) {
+			$pkey = static::$cache_pkey[$classname];
+		} else {
+			$au = Aurora_Type::aurora($model);
+			$pkey = Aurora_Database::pkey($au);
+			static::$cache_pkey[$classname] = $pkey;
+		}
+		$all_props = static::getters($model);
+		return $all_props[$pkey];
+	}
+	/**
+	 * Get the VALUE of the ID of the Model.
 	 *
 	 * @uses Aurora_Property::get
 	 * @uses Aurora_Type::aurora
