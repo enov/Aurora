@@ -19,15 +19,15 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 *
 	 * @var string hold the type of model
 	 */
-	protected $_valueType;
+	protected $_modelclass;
 	/**
 	 * @var array store internal data
 	 */
 	protected $_collection = array();
 	/**
-	 * @var bool true if collection contains unloaded (new) models
+	 * @var array description of the id property of the models
 	 */
-	protected $_is_dirty = FALSE;
+	protected $_pkey_property;
 	/**
 	 * Create a new collection instance.
 	 *
@@ -43,30 +43,25 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 		return new $class;
 	}
 	/**
-	 * Calculates offset given $id
-	 * @param mixed $id
-	 * @return mixed
-	 */
-	public function get_offset($id) {
-		if (empty($id))
-			return NULL;
-		return 's' . $id;
-	}
-	/**
 	 * Get Model from Collection given ID
 	 *
 	 * @param type $id
+	 * @return Model/NULL
 	 */
 	public function get($id) {
-		$offset = $this->get_offset($id);
-		if (isset($this->_collection[$offset]))
-			return $this->_collection[$offset];
-		if ($this->_is_dirty)
-			foreach ($this->_collection as $offset => $model) {
-				if (is_int($offset))
-					if (Aurora_Property::get_pkey($model) === $id)
-						return $model;
+		if (empty($this->_pkey_property))
+			$this->_pkey_property = Aurora_Property::pkey_property($this->modelclass());
+		$pkey_prop = $this->_pkey_property['name'];
+		$pkey_method = 'get_' . $this->_pkey_property['name'];
+		foreach ($this->_collection as $offset => $model) {
+			if ($this->_pkey_property['type'] == 'property') {
+				if ($model->$pkey_prop === $id)
+					return $model;
+			} else {
+				if ($model->$pkey_method() === $id)
+					return $model;
 			}
+		}
 		return NULL;
 	}
 	/**
@@ -75,39 +70,20 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 * @throws InvalidArgumentException when wrong type
 	 */
 	public function add($model) {
-		if (!$this->valid_type($model))
-			throw new InvalidArgumentException('Trying to add a value of wrong type');
-		// Get model id
-		$id = Aurora_Property::get_pkey($model);
-		// if empty $id, model is new, this collection is dirty
-		if (empty($id))
-			$this->_is_dirty = TRUE;
-		// do not allow to add a model if collection contains one with same id
-		else if ($this->exists($id))
-			throw new Kohana_Exception('Model with same id already exists');
-		// calculate offset
-		$offset = empty($id) ? NULL : $this->get_offset($id);
 		// add to collection
-		return $this->offsetSet($offset, $model);
+		return $this->offsetSet(NULL, $model);
 	}
 	/**
 	 * Remove a model from the collection
+	 * 
 	 * @param integer $id id of model to remove
-	 * @throws OutOfRangeException if index is out of range
 	 */
 	public function remove($id) {
-		// try to unset with the $offset
-		$offset = $this->get_offset($id);
-		if (isset($this->_collection[$offset]))
-			return $this->offsetUnset($offset);
-		// only loop the hard loop if collection is dirty
-		if ($this->_is_dirty)
-			foreach ($this->_collection as $offset => $model) {
-				if (Aurora_Property::get_pkey($model) === $id)
-					return $this->offsetUnset($offset);
-			}
-		// return FALSE if nothing to remove
-		return FALSE;
+		$model = $this->get($id);
+		if (empty($model))
+			return FALSE;
+		$offset = array_search($model, $this->_collection, TRUE);
+		return $this->offsetUnset($offset);
 	}
 	/**
 	 * Determine if index exists
@@ -127,17 +103,26 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 		return count($this->_collection);
 	}
 	/**
+	 * Get the class name of the Model related to this Collection
+	 */
+	public function modelclass() {
+		// lazy load instead of initializing in the constructor (performance hit?)
+		if (empty($this->_modelclass))
+			$this->_modelclass = Aurora_Type::model($this);
+		return $this->_modelclass;
+	}
+	/**
 	 * Determine if this value can be added to this collection
 	 * @param string $value
 	 * @return boolean
 	 */
 	public function valid_type($value) {
 		// lazy load instead of initializing in the constructor (performance hit?)
-		if (empty($this->_valueType))
-			$this->_valueType = Aurora_Type::model($this);
+		if (empty($this->_modelclass))
+			$this->_modelclass = $this->modelclass();
 		// instanceof works on interfaces as well as classes.
 		// It also checks the entire inheritance chain
-		return $value instanceof $this->_valueType;
+		return $value instanceof $this->_modelclass;
 	}
 	/**
 	 * Return an iterator
@@ -157,6 +142,8 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 * @return mixed the value set
 	 */
 	public function offsetSet($offset, $value) {
+		if (!$this->valid_type($value))
+			throw new InvalidArgumentException('Trying to add a value of wrong type');
 		if (!isset($offset)) {
 			$this->_collection[] = $value;
 		} else {
@@ -179,7 +166,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 * Implements ArrayAccess
 	 * @see get
 	 * @param integer $offset
-	 * @return mixed
+	 * @return Model
 	 */
 	public function offsetGet($offset) {
 		return $this->_collection[$offset];
@@ -198,7 +185,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 * Clear out the collection
 	 */
 	public function clear() {
-		// empty the internal array
+		// reset the internal array
 		$this->_collection = array();
 		return $this;
 	}
