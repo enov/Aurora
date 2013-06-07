@@ -24,6 +24,14 @@ class Aurora_Aurora_Database
 		return isset($aurora->config) ? $aurora->config : 'pdo';
 	}
 	/**
+	 * returns the database config group
+	 *
+	 * @return string
+	 */
+	public static function transactional($aurora) {
+		return isset($aurora->transactional) ? (bool) $aurora->transactional : TRUE;
+	}
+	/**
 	 * returns the name of the table
 	 * associated with this model
 	 * should be overriden in case of
@@ -124,23 +132,61 @@ class Aurora_Aurora_Database
 	}
 	/**
 	 * DATABASE TRANSACTIONS
+	 *
+	 * ------ note ------
+	 *
+	 * should we use?
+	 *
+	 * DB::expr('BEGIN')->execute($config);
+	 *
+	 * for code consistency with DB above? or probably such expressions lead to
+	 * database engine specific SQL queries?
+	 *
+	 * ------ end note ------
+	 */
+	/**
+	 * START TRANSACTION
+	 *
+	 * @param Aurora $aurora
 	 */
 	public static function begin($aurora) {
 		// prepare variables
+		$transactional = static::transactional($aurora);
 		$config = static::config($aurora);
 		// start transaction
-		return Database::instance($config)->begin();
+		return
+		  ($transactional) ?
+		  Database::instance($config)->begin() :
+		  FALSE;
 	}
+	/**
+	 * COMMIT TRANSACTION
+	 *
+	 * @param Aurora $aurora
+	 */
 	public static function commit($aurora) {
 		// prepare variables
+		$transactional = static::transactional($aurora);
 		$config = static::config($aurora);
-		// start transaction
-		return Database::instance($config)->commit();
+		// commit transaction
+		return
+		  ($transactional) ?
+		  Database::instance($config)->commit() :
+		  FALSE;
 	}
+	/**
+	 * ROLLBACK TRANSACTION
+	 *
+	 * @param Aurora $aurora
+	 */
 	public static function rollback($aurora) {
 		// prepare variables
+		$transactional = static::transactional($aurora);
 		$config = static::config($aurora);
-		// start transaction
-		return Database::instance($config)->rollback();
+		// rollback transaction
+		return
+		  ($transactional) ?
+		  Database::instance($config)->rollback() :
+		  FALSE;
 	}
 }
