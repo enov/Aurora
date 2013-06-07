@@ -390,7 +390,7 @@ class Aurora_Aurora_Core
 	}
 	protected static function _delete($model) {
 		// Test if $model is_new and throw exception if TRUE
-		if (static::is_new($object))
+		if (static::is_new($model))
 			throw new Kohana_Exception('Can not delete a new Model.');
 		// Get the value $pk (the ID) of the $model
 		return Aurora_Property::get_pkey($model);
