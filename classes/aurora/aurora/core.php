@@ -365,7 +365,7 @@ class Aurora_Aurora_Core
 				foreach ($object as $model)
 					$IDs[] = static::_delete($model);
 			} else {
-				$IDs[] = static::_delete($model);
+				$IDs[] = static::_delete($object);
 			}
 			// Run the delete query
 			$result = Aurora_Database::delete($au, $IDs);
