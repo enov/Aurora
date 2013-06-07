@@ -117,7 +117,30 @@ class Aurora_Aurora_Database
 		$table = static::table($aurora);
 		$pkey = static::pkey($aurora);
 		$config = static::config($aurora);
+		// prepare ids to handle multiple deletes
+		$IDs = is_scalar($pk) ? array($pk) : $pk;
 		// run delete
-		return DB::delete($table)->where($pkey, '=', $pk)->execute($config);
+		return DB::delete($table)->where($pkey, 'IN', $IDs)->execute($config);
+	}
+	/**
+	 * DATABASE TRANSACTIONS
+	 */
+	public static function begin($aurora) {
+		// prepare variables
+		$config = static::config($aurora);
+		// start transaction
+		return Database::instance($config)->begin();
+	}
+	public static function commit($aurora) {
+		// prepare variables
+		$config = static::config($aurora);
+		// start transaction
+		return Database::instance($config)->commit();
+	}
+	public static function rollback($aurora) {
+		// prepare variables
+		$config = static::config($aurora);
+		// start transaction
+		return Database::instance($config)->rollback();
 	}
 }
