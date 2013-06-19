@@ -94,7 +94,7 @@ class Aurora_Aurora_Type
 	public static function is_aurora($object, $classname_only = false) {
 		$pattern = '/^Aurora_/';
 		if ($classname_only)
-			return preg_match($pattern, static::classname($object));
+			return (bool) preg_match($pattern, static::classname($object));
 		else
 			return
 			  preg_match($pattern, static::classname($object)) AND
@@ -109,7 +109,7 @@ class Aurora_Aurora_Type
 	public static function is_model($object, $classname_only = false) {
 		$pattern = '/^Model_/';
 		if ($classname_only)
-			return preg_match($pattern, static::classname($object));
+			return (bool) preg_match($pattern, static::classname($object));
 		else
 			return
 			  preg_match($pattern, static::classname($object)) AND
@@ -124,7 +124,7 @@ class Aurora_Aurora_Type
 	public static function is_collection($object, $classname_only = false) {
 		$pattern = '/^Collection_/';
 		if ($classname_only)
-			return preg_match($pattern, static::classname($object));
+			return (bool) preg_match($pattern, static::classname($object));
 		else
 			return
 			  preg_match($pattern, static::classname($object)) AND
@@ -139,7 +139,7 @@ class Aurora_Aurora_Type
 	public static function is_controller($object, $classname_only = false) {
 		$pattern = '/^Controller_API_/';
 		if ($classname_only)
-			return preg_match($pattern, static::classname($object));
+			return (bool) preg_match($pattern, static::classname($object));
 		else
 			return
 			  preg_match($pattern, static::classname($object)) AND
