@@ -98,7 +98,7 @@ class Aurora_Aurora_Type
 		else
 			return
 			  preg_match($pattern, static::classname($object)) AND
-			  $object instanceof Aurora_Interface;
+			  $object instanceof Interface_Aurora_Database;
 	}
 	/**
 	 * Test if $object is a Model
