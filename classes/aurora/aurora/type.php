@@ -136,7 +136,7 @@ class Aurora_Aurora_Type
 	 * @param mixed $object
 	 * @return boolean
 	 */
-	public static function is_controller($object, $classname_only = false) {
+	public static function is_controller_api($object, $classname_only = false) {
 		$pattern = '/^Controller_API_/';
 		if ($classname_only)
 			return (bool) preg_match($pattern, static::classname($object));
