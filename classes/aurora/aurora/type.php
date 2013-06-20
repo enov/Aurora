@@ -82,7 +82,7 @@ class Aurora_Aurora_Type
 	 * @param mixed $object
 	 * @return string
 	 */
-	public static function controller($object) {
+	public static function controller_api($object) {
 		return 'Controller_API_' . static::cname($object);
 	}
 	/**
