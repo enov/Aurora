@@ -37,7 +37,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 * @return  Collection
 	 */
 	public static function factory($name) {
-		// Add the model prefix
+		// Add the collection prefix
 		$class = 'Collection_' . $name;
 
 		return new $class;
@@ -51,9 +51,13 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	public function get($id) {
 		if (empty($this->_pkey_property))
 			$this->_pkey_property = Aurora_Property::pkey_property($this->modelclass());
-		$model = $this->_collection[$id];
-		if (Aurora_Property::get_pkey($model) === $id)
-			return $model;
+		// to speed up "getting" the model, test if the model at offset $id
+		// is the one we are looking for
+		if (array_key_exists($id, $this->_collection)) {
+			$model = $this->_collection[$id];
+			if (Aurora_Property::get_pkey($model) === $id)
+				return $model;
+		}
 		$pkey_prop = $this->_pkey_property['name'];
 		$pkey_method = 'get_' . $this->_pkey_property['name'];
 		foreach ($this->_collection as $offset => $model) {
