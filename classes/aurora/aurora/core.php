@@ -185,7 +185,8 @@ class Aurora_Aurora_Core
 		return $result;
 	}
 	/**
-	 * Check if your Model has an ID.
+	 * Check if your Model is new.
+	 * A new Model is not loaded from the database and does not have an ID
 	 *
 	 *     // usage
 	 *     $is_new = AU::is_new($model);
@@ -197,6 +198,21 @@ class Aurora_Aurora_Core
 		if (!Aurora_Type::is_model($model))
 			throw new Kohana_Exception('Tested $model is not a Model.');
 		return !Aurora_Property::get_pkey($model);
+	}
+	/**
+	 * Check if your Model is loaded.
+	 * A loaded Model has an ID
+	 *
+	 *     // usage
+	 *     $loaded = AU::is_loaded($model);
+	 *
+	 * @param Model $model
+	 * @return boolean
+	 */
+	public static function is_loaded($model) {
+		if (!Aurora_Type::is_model($model))
+			throw new Kohana_Exception('Tested $model is not a Model.');
+		return (bool) Aurora_Property::get_pkey($model);
 	}
 	/**
 	 * Factory method to create Models or
