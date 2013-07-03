@@ -88,22 +88,45 @@ class Aurora_Aurora_Database
 	 * DATABASE CRUD OPERATIONS
 	 */
 	public static function select($aurora, $param) {
-		// prepare variables
-		$table = static::table($aurora);
 		$config = static::config($aurora);
+		// prepare variables
+		$query = static::build_query($aurora, $param);
+		// execute
+		return $query->execute($config);
+	}
+	protected static function build_query($aurora, $param) {
+		$table = static::table($aurora);
 		$query = static::qview($aurora);
-		// prepare parameters
-		if (!empty($param)) {
-			if (is_scalar($param))
-				$param = array(static::pkey($aurora) => $param);
+		$pkey = static::pkey($aurora);
+		// if param empty return $query
+		if (empty($param))
+			return $query;
+		// if param is just a scalar value, we will consider it an ID
+		if (is_scalar($param))
+			return $query->where($table . '.' . $pkey, '=', $param);
+		// if param is an array of scalars, we will consider an array of IDs
+		if (
+		  (is_array($param)) AND
+		  ($param === array_filter($param, "is_scalar")) AND
+		  (array_keys($param) === array_filter(array_keys($param), 'is_int'))
+		) {
+			$param = array_values($param);
+			return $query->where($table . '.' . $pkey, 'IN', $param);
+		}
+		// if param is callable, call it by passing query as argument
+		if (is_callable($param))
+			return $param($query);
+		// if param is an array
+		if (is_array($param)) {
 			foreach ($param as $column => $value) {
 				if (is_scalar($value))
 					$query = $query->where($table . '.' . $column, '=', $value);
 				else if (is_callable($value))
 					$value($query);
 			}
+			return $query;
 		}
-		return $query->execute($config);
+		return $query;
 	}
 	public static function insert($aurora, $row) {
 		// prepare variables
