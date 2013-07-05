@@ -53,6 +53,8 @@ class Aurora_Aurora_Route
 	/**
 	 * Reverse Routing
 	 * Get the uri from cname
+	 *
+	 * @return string URI of Model/Collection/Aurora/cname
 	 */
 	public static function reverse($object) {
 		$cname = Aurora_Type::cname($object);
