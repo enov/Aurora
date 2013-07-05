@@ -58,6 +58,8 @@ class Aurora_Aurora_Route
 	 */
 	public static function reverse($object) {
 		$cname = Aurora_Type::cname($object);
-		return 'api/' . str_replace('_', '/', $cname);
+		return 'api/' . str_replace(
+			'_', '/', strtolower($cname)
+		);
 	}
 }
