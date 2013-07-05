@@ -50,4 +50,12 @@ class Aurora_Aurora_Route
 			return false;
 		}
 	}
+	/**
+	 * Reverse Routing
+	 * Get the uri from cname
+	 */
+	public static function reverse($object) {
+		$cname = Aurora_Type::cname($object);
+		return 'api/' . str_replace('_', '/', $cname);
+	}
 }
