@@ -23,7 +23,7 @@ class Aurora_Aurora_Type
 	public static function classname($object) {
 		if (is_object($object))
 			return get_class($object);
-		if (is_string($object))
+		if (is_string($object) AND class_exists($object))
 			return $object;
 		return FALSE;
 	}
@@ -37,9 +37,19 @@ class Aurora_Aurora_Type
 	 * @return string
 	 */
 	public static function cname($object) {
-		return preg_replace(
-		  array('/^Model_/', '/^Collection_/', '/^Aurora_/', '/^Controller_API_/'), '', static::classname($object)
+		$classname = static::classname($object) ? : (string) $object;
+		$cname = preg_replace(
+		  array(
+			'/^Model_/',
+			'/^Collection_/',
+			'/^Aurora_/',
+			'/^Controller_API_/',
+		  ), '', $classname
 		);
+		return
+		  (class_exists('Aurora_' . $cname)) ?
+		  $cname :
+		  FALSE;
 	}
 	/**
 	 * Get the classname of the Model related to the $object.

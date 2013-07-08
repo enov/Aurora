@@ -47,11 +47,11 @@ class Aurora_Aurora_Core
 		$benchmark = Aurora_Profiler::start($object, __FUNCTION__);
 
 		try {
-
 			// serialize Model or Colleciton into encodeable object
-			$json_obj = static::json_serialize($object);
+			if (Aurora_Type::is_model($object) OR Aurora_Type::is_collection($object))
+				$object = static::json_serialize($object);
 			// encode the serialized object
-			$json_str = json_encode($json_obj);
+			$json_str = json_encode($object);
 		} catch (Exception $e) {
 			Aurora_Profiler::delete($benchmark);
 			throw $e;
@@ -112,6 +112,14 @@ class Aurora_Aurora_Core
 		$benchmark = Aurora_Profiler::start($object, __FUNCTION__);
 
 		try {
+			// Set the mode of the serialization
+			if (Aurora_Type::is_model($object)) {
+				$mode = 'from_model';
+			} else if (Aurora_Type::is_collection($object)) {
+				$mode = 'from_collection';
+			} else {
+				throw new InvalidArgumentException("Argument not an instance of Model or Collection");
+			}
 
 			// Get the Aurora_ class for this object
 			$au = static::factory($object, 'aurora');
@@ -119,14 +127,6 @@ class Aurora_Aurora_Core
 			if ($au instanceof Interface_Aurora_JSON_Serialize)
 				return $au->json_serialize($object);
 
-			// Set the mode of the serialization
-			if (Aurora_Type::is_model($object)) {
-				$mode = 'from_model';
-			} else if (Aurora_Type::is_collection($object)) {
-				$mode = 'from_collection';
-			} else {
-				throw new InvalidArgumentException("Variable not an instance of Model or Collection");
-			}
 
 			// Return an stdClass or an array of stdClass
 			$std = Aurora_StdClass::$mode($object);
