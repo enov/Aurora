@@ -25,14 +25,15 @@ class Aurora_Aurora_Core
 	 */
 	public static function auto_load($class) {
 		// This is only for Auroras and Collections. A test before proceeding
-		$test_classname_only = TRUE;
+		$pattern_aurora = '/^Aurora_/';
+		$pattern_collection = '/^Collection_/';
 		if (
-		  !Aurora_Type::is_aurora($class, $test_classname_only) AND
-		  !Aurora_Type::is_collection($class, $test_classname_only)
+		  !preg_match($pattern_aurora, $class) AND
+		  !preg_match($pattern_collection, $class)
 		)
 			return FALSE;
 		// change the class name to model classname
-		$class = Aurora_Type::model($class);
+		$class = preg_replace(array($pattern_aurora, $pattern_collection), 'Model_', $class);
 		// Call standard Kohana auto-loading mechanism
 		Kohana::auto_load($class);
 	}
