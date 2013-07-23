@@ -21,7 +21,7 @@ class Aurora_Aurora_Database
 	 * @return string
 	 */
 	public static function config($aurora) {
-		return isset($aurora->config) ? $aurora->config : 'pdo';
+		return isset($aurora->config) ? $aurora->config : 'default';
 	}
 	/**
 	 * returns the database config group
