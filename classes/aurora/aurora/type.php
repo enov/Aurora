@@ -46,10 +46,11 @@ class Aurora_Aurora_Type
 			'/^Controller_API_/',
 		  ), '', $classname
 		);
-		return
-		  (class_exists('Aurora_' . $cname)) ?
-		  $cname :
-		  FALSE;
+		// class Aurora_$cname must exist
+		if (!class_exists('Aurora_' . $cname))
+			throw new Kohana_Exception('Can not find common name');
+		//return
+		return $cname;
 	}
 	/**
 	 * Get the classname of the Model related to the $object.
