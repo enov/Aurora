@@ -224,6 +224,8 @@ class Aurora_Aurora_Core
 	 * @return Model/Collection
 	 */
 	public static function factory($classname, $type = NULL) {
+		if (empty($classname))
+			throw new InvalidArgumentException('Invalid classname');
 		if (!empty($type))
 			$classname = Aurora_Type::$type($classname);
 		return new $classname();
