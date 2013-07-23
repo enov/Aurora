@@ -26,6 +26,8 @@ class Aurora_Aurora_Profiler
 	 * @return string benchmark id in Profiler
 	 */
 	public static function start($aurora, $function) {
+		if (empty($aurora) OR empty($function))
+			return FALSE;
 		$name = Aurora_Type::cname($aurora) . '::' . $function;
 		$benchmark =
 		  (Kohana::$profiling === TRUE) ?
