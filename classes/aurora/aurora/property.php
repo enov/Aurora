@@ -62,7 +62,7 @@ class Aurora_Aurora_Property
 			}
 		}
 		// Loop over the class properties (will override methods)
-		foreach (get_class_vars($classname) as $property) {
+		foreach (get_class_vars($classname) as $property => $value) {
 			$properties[$property] = array(
 				'type' => 'property',
 				'name' => $property,

@@ -276,7 +276,7 @@ class Aurora_Aurora_Core
 				$result = $model;
 			} else {
 				/* @var $collection Aurora_Collection */
-				$collection = is_object($object) ? $object : static::factory($object, 'collection');
+				$collection = Aurora_Type::is_collection($object) ? $object : static::factory($object, 'collection');
 				$model_name = Aurora_Type::model($object);
 				$array = & $collection->to_array();
 				$row_pkey = Aurora_Database::row_pkey($au);

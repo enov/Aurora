@@ -64,19 +64,32 @@ class Aurora_Aurora
 	 * @return Model/Collection
 	 */
 	public function json_decode($json) {
-		Au::json_decode($this->au, $json);
+		return Au::json_decode($json, $this->au);
 	}
 	/**
 	 * Check if your Model has an ID.
 	 *
 	 *     // usage
-	 *     $is_new = $au->is_new($model);
+	 *     $new = $this->is_new($model);
 	 *
 	 * @param Model $model
 	 * @return boolean
 	 */
 	public function is_new($model) {
 		return Au::is_new($model);
+	}
+	/**
+	 * Check if your Model is loaded.
+	 * A loaded Model has an ID
+	 *
+	 *     // usage
+	 *     $loaded = $this->is_loaded($model);
+	 *
+	 * @param Model $model
+	 * @return boolean
+	 */
+	public function is_loaded($model) {
+		return Au::is_loaded($model);
 	}
 	/**
 	 * Load a model or collection from database
@@ -87,7 +100,7 @@ class Aurora_Aurora
 	 * @return Model/Collection
 	 */
 	public function load($params = NULL) {
-		Au::load($this->au, $params);
+		return Au::load($this->au, $params);
 	}
 	/**
 	 *
