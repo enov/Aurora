@@ -4,7 +4,7 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Aurora_Au extends Aurora_Core
 {
-	protected static $type, $prop, $rflx, $db, $bbone, $std, $hook;
+	protected static $type, $prop, $rflx, $db, $std, $hook;
 	/**
 	 * Shortcut to Aurora_Type for method chaining.
 	 *
@@ -64,21 +64,6 @@ class Aurora_Au extends Aurora_Core
 		  static::$db ?
 		  static::$db :
 		  static::$db = new Aurora_Database();
-	}
-	/**
-	 * Shortcut to Aurora_Backbone for method chaining.
-	 *
-	 * usage:
-	 *
-	 *		Au::bbone()->js();
-	 *
-	 * @return Aurora_Backbone
-	 */
-	public static function bbone() {
-		return
-		  static::$bbone ?
-		  static::$bbone :
-		  static::$bbone = new Aurora_Backbone();
 	}
 	/**
 	 * Shortcut to Aurora_StdClass for method chaining.
