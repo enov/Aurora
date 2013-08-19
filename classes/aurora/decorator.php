@@ -11,20 +11,35 @@ defined('SYSPATH') or die('No direct script access.');
  * @license http://license.enov.ws/mit MIT
  *
  */
-class Aurora_Aurora
+class Aurora_Decorator
 {
 
 	protected $au;
 	public function __construct($au) {
 		if (!Aurora_Type::is_aurora($au))
-			throw new Kohana_Exception('Parameter must be of type Aurora');
+			throw new Kohana_Exception('Parameter must be an Aurora');
 		$this->au = $au;
 	}
+	/**
+	 * Factory method. Use this when you want to instantiate
+	 * your Aurora, decorated with the Aurora_Core methods.
+	 *
+	 * @param string $cname
+	 * @return Aurora
+	 */
 	public static function factory($cname) {
-		$decorator_class = get_called_class();
-		$aurora_class = Au::type()->aurora($cname);
+		$decorator = get_called_class();
+		$vanilla = Au::type()->aurora($cname);
 
-		return new $decorator_class(new $aurora_class);
+		return new $decorator(new $vanilla);
+	}
+	/**
+	 * Get the internal, undecorated, vanilla Aurora
+	 *
+	 * @return Aurora
+	 */
+	public function vanilla(){
+		return $this->au;
 	}
 	/**
 	 * Get a Kohana View with the JSON representation
@@ -114,6 +129,10 @@ class Aurora_Aurora
 			$object = $this->load($object);
 		Au::save($object);
 	}
+	/**
+	 *
+	 * @param type $object
+	 */
 	public function delete($object) {
 		if (
 		  !Au::type()->is_collection($object) and
@@ -122,7 +141,14 @@ class Aurora_Aurora
 			$object = $this->load($object);
 		Au::delete($object);
 	}
-
+	/**
+	 * Magic function to call your Aurora methods.
+	 * It gets triggered when you call a method other than
+	 * the Aurora_Core API, that's basically when you call a
+	 * method from your Aurora.
+	 * 
+	 * @return $this for chaining
+	 */
 	public function __call($name, $arguments) {
 		call_user_func_array(array($this->au, $name), $arguments);
 		return $this;
