@@ -37,6 +37,9 @@ class Aurora_Aurora_Type
 	 * @return string
 	 */
 	public static function cname($object) {
+		if ($object instanceof Aurora_Decorator) {
+			$object = $object->vanilla();
+		}
 		$classname = static::classname($object) ? : (string) $object;
 		$cname = preg_replace(
 		  array(

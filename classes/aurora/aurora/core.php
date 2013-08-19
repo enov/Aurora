@@ -50,7 +50,7 @@ class Aurora_Aurora_Core
 		try {
 			// serialize Model or Colleciton into encodeable object
 			if (Aurora_Type::is_model($object) OR Aurora_Type::is_collection($object))
-				$object = static::json_serialize($object);
+				$object = Aurora_JSON::serialize($object);
 			// encode the serialized object
 			$json_str = json_encode($object);
 		} catch (Exception $e) {
@@ -79,101 +79,7 @@ class Aurora_Aurora_Core
 			// decode the json_str to a stdClass or array
 			$json_obj = json_decode($json_str);
 			// Deserialize decoded object into Model or Colleciton
-			$result = static::json_deserialize($json_obj, $type);
-		} catch (Exception $e) {
-			Aurora_Profiler::delete($benchmark);
-			throw $e;
-		}
-
-		// end profiling
-		Aurora_Profiler::stop($benchmark);
-
-		// return
-		return $result;
-	}
-	/**
-	 * Get a json_encodable object from Model or Collection
-	 * Delegates to Aurora if custom implementation exists
-	 *
-	 * usage:
-	 *
-	 *     // Get the JSON object of type stdClass or array of stdClass
-	 *     $json_obj = AU::json_serialize($model);
-	 *     // encode to string
-	 *     $json_str = json_encode($json_obj);
-	 *     // output
-	 *     $this->response->body($json_str);
-	 *
-	 * @param Model/Collection $object
-	 * @return mixed a json_encodable object, probably a stdClass
-	 * @throws InvalidArgumentException if $object is not a model or collection
-	 */
-	public static function json_serialize($object) {
-		// start profiling
-		$benchmark = Aurora_Profiler::start($object, __FUNCTION__);
-
-		try {
-			// Set the mode of the serialization
-			if (Aurora_Type::is_model($object)) {
-				$mode = 'from_model';
-			} else if (Aurora_Type::is_collection($object)) {
-				$mode = 'from_collection';
-			} else {
-				throw new InvalidArgumentException("Argument not an instance of Model or Collection");
-			}
-
-			// Get the Aurora_ class for this object
-			$au = static::factory($object, 'aurora');
-			// test if it implements json_serialize
-			if ($au instanceof Interface_Aurora_JSON_Serialize)
-				return $au->json_serialize($object);
-
-
-			// Return an stdClass or an array of stdClass
-			$std = Aurora_StdClass::$mode($object);
-		} catch (Exception $e) {
-			Aurora_Profiler::delete($benchmark);
-			throw $e;
-		}
-
-		// end profiling
-		Aurora_Profiler::stop($benchmark);
-
-		// return
-		return $std;
-	}
-	/**
-	 * Convert from JSON to Model or Collection
-	 *
-	 *     // for example, if $json_string = '{ id: 3, ... }';
-	 *     // Decode from JSON string
-	 *     $json = json_decode($json_string);
-	 *
-	 *     // OR just convert to $object of type Model or Collection
-	 *     $object = AU::json_deserialize("Calendar_Event", $json);
-	 *
-	 * @param stdClass/array $json The JSON object of type stdClass or array of stdClass
-	 * @param string/Aurora $type The type to serialize into the $json object
-	 * @return Model/Collection
-	 */
-	public static function json_deserialize($json, $type) {
-		// start profiling
-		$benchmark = Aurora_Profiler::start($type, __FUNCTION__);
-
-		try {
-
-			// Get the Aurora_ class for this object
-			$au = Aurora_Type::is_aurora($type) ? $type : static::factory($type, 'aurora');
-			// test if it implements json_decode
-			if ($au instanceof Interface_Aurora_JSON_Deserialize)
-				return $au->json_deserialize($json);
-
-			// process: convert json to model or collection
-			$result = (is_array($json)) ?
-			  // if JSON is array return Collection
-			  Aurora_StdClass::to_collection($json, Aurora_Type::collection($type)) :
-			  // otherwise (if it is of type stdClass) return Model
-			  Aurora_StdClass::to_model($json, Aurora_Type::model($type));
+			$result = Aurora_JSON::deserialize($json_obj, $type);
 		} catch (Exception $e) {
 			Aurora_Profiler::delete($benchmark);
 			throw $e;
@@ -223,11 +129,10 @@ class Aurora_Aurora_Core
 	 * @param string $type "model" or "collection"
 	 * @return Model/Collection
 	 */
-	public static function factory($classname, $type = NULL) {
+	public static function factory($classname, $type = 'aurora') {
 		if (empty($classname))
 			throw new InvalidArgumentException('Invalid classname');
-		if (!empty($type))
-			$classname = Aurora_Type::$type($classname);
+		$classname = Aurora_Type::$type($classname);
 		return new $classname();
 	}
 	/**
@@ -282,16 +187,12 @@ class Aurora_Aurora_Core
 				$row_pkey = Aurora_Database::row_pkey($au);
 				foreach ($rowset as $row) {
 					$pkey = $row[$row_pkey];
-					if (isset($array[$pkey]))
-						$model = $array[$pkey];
-					else {
-						$model = new $model_name;
-						$array[$pkey] = $model;
-					}
+					$model = new $model_name;
 					$au->db_retrieve($model, $row);
+					$array[$pkey] = $model;
+					// run after hook if exists
+					Aurora_Hook::call($au, 'after_load', $model);
 				}
-				// run after hook if exists
-				Aurora_Hook::call($au, 'after_load', $collection);
 				$result = $collection;
 			}
 		} catch (Exception $e) {

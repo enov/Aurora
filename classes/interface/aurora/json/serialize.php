@@ -12,11 +12,11 @@ interface Interface_Aurora_JSON_Serialize
 {
 	/**
 	 *
-	 * @param Model/Collection $object
+	 * @param Model/Collection $model
 	 * @return mixed a stdClass or an array of stdClass or any type that can be
 	 *         serialized, if you think your model can be serialized,
 	 *         just return it
 	 *
 	 */
-	public function json_serialize($object);
+	public function json_serialize($model);
 }
