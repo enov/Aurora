@@ -139,6 +139,7 @@ class Aurora_Aurora_Core
 	 * Load a model or collection from database
 	 * using Aurora
 	 *
+	 * @uses Aurora_Core::find_mode find out whether to return Model or Collection
 	 * @param string/aurora $object
 	 * @param scalar/array/callable $params
 	 * @return Model/Collection
@@ -151,18 +152,10 @@ class Aurora_Aurora_Core
 
 			// Get the Aurora_ class for this object
 			$au = Aurora_Type::is_aurora($object) ? $object : static::factory($object, 'aurora');
+			// find out mode:
+			$mode = static::find_mode($object, $params);
 			// run before hook if exists
 			Aurora_Hook::call($au, 'before_load', $params);
-			// find out mode:
-			// whether this function will load a model or a collection
-			if (is_null($params))
-				$mode = 'collection';
-			if (is_scalar($params))
-				$mode = 'model';
-			if (Aurora_Type::is_model($object))
-				$mode = 'model';
-			if (Aurora_Type::is_collection($object))
-				$mode = 'collection';
 			// Run select query
 			$rowset = Aurora_Database::select($au, $params);
 			$count = count($rowset);
@@ -175,7 +168,7 @@ class Aurora_Aurora_Core
 				if (!$count)
 				// should we Aurora_Hook::call($au, 'after_load', FALSE)? if no result?
 					return false;
-				$model = is_object($object) ? $object : static::factory($object, 'model');
+				$model = Aurora_Type::is_model($object) ? $object : static::factory($object, 'model');
 				$au->db_retrieve($model, $rowset[0]);
 				$result = $model;
 			} else {
@@ -204,6 +197,25 @@ class Aurora_Aurora_Core
 
 		// return
 		return $result;
+	}
+	/**
+	 * helper class for load function in order to find out
+	 * whether to return model or collection
+	 *
+	 * @param type $object
+	 * @param type $params
+	 * @return mixed 'model', 'collection', FALSE
+	 */
+	protected static function find_mode($object, $params) {
+		if (is_null($params))
+			$mode = 'collection';
+		if (is_scalar($params))
+			$mode = 'model';
+		if (Aurora_Type::is_model($object))
+			$mode = 'model';
+		if (Aurora_Type::is_collection($object))
+			$mode = 'collection';
+		return $mode;
 	}
 	/**
 	 * Save a model or a collection to the database

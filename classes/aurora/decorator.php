@@ -146,7 +146,7 @@ class Aurora_Decorator
 	 * It gets triggered when you call a method other than
 	 * the Aurora_Core API, that's basically when you call a
 	 * method from your Aurora.
-	 * 
+	 *
 	 * @return $this for chaining
 	 */
 	public function __call($name, $arguments) {
