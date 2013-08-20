@@ -207,6 +207,7 @@ class Aurora_Aurora_Core
 	 * @return mixed 'model', 'collection', FALSE
 	 */
 	protected static function find_mode($object, $params) {
+		$mode = NULL;
 		if (is_null($params))
 			$mode = 'collection';
 		if (is_scalar($params))
