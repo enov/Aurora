@@ -77,12 +77,13 @@ class Aurora_Aurora_Database
 	 * @return Database_Query_Builder_Select
 	 */
 	public static function qview($aurora) {
-		return
-		  isset($aurora->qview) ?
-		  $aurora->qview :
-		  is_callable(array($aurora, 'qview')) ?
-			$aurora->qview() :
-			DB::select()->from(static::table($aurora));
+
+		if (isset($aurora->qview))
+			return $aurora->qview;
+		else
+			return is_callable(array($aurora, 'qview')) ?
+				$aurora->qview() :
+				DB::select()->from(static::table($aurora));
 	}
 	/**
 	 * DATABASE CRUD OPERATIONS
