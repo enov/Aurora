@@ -177,7 +177,6 @@ class Aurora_Aurora_Core
 					return false;
 				$model = is_object($object) ? $object : static::factory($object, 'model');
 				$au->db_retrieve($model, $rowset[0]);
-				Aurora_Hook::call($au, 'after_load', $model);
 				$result = $model;
 			} else {
 				/* @var $collection Aurora_Collection */
@@ -190,11 +189,11 @@ class Aurora_Aurora_Core
 					$model = new $model_name;
 					$au->db_retrieve($model, $row);
 					$array[$pkey] = $model;
-					// run after hook if exists
-					Aurora_Hook::call($au, 'after_load', $model);
 				}
 				$result = $collection;
 			}
+			// run after hook if exists
+			Aurora_Hook::call($au, 'after_load', $result);
 		} catch (Exception $e) {
 			Aurora_Profiler::delete($benchmark);
 			throw $e;
