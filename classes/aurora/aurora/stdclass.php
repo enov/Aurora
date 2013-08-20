@@ -40,6 +40,10 @@ class Aurora_Aurora_StdClass
 			else if (Aurora_Type::is_collection($value)) {
 				$std->$prop = static::from_collection($value);
 			}
+			// if $value is JsonSerializable
+			else if ($value instanceof JsonSerializable) {
+				$std->$prop = $value->jsonSerialize();
+			}
 			// Special care for DateTime. Is this generally acceptable?
 			else if ($value instanceof DateTime) {
 				$std->$prop = $value->format(DATE_ISO8601);
