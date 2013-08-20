@@ -36,36 +36,38 @@ class Aurora_Aurora_JSON
 	 * @throws InvalidArgumentException if $object is not a model or collection
 	 */
 	public static function serialize($object) {
-		// Set the mode of the serialization
-		if (Aurora_Type::is_model($object)) {
-			// Get the Aurora_ class for this object
-			$au = Aurora_Core::factory($object, 'aurora');
-			// test if it implements json_serialize
-			if ($au instanceof Interface_Aurora_JSON_Serialize)
-				$std = $au->json_serialize($object);
-			// Return an stdClass
-			else
-				$std = Aurora_StdClass::from_model($object);
-		} else if (Aurora_Type::is_collection($object)) {
-			// Get the Aurora_ class for this object
-			$au = Aurora_Core::factory($object, 'aurora');
-			// test if it implements json_serialize
-			if ($au instanceof Interface_Aurora_JSON_Serialize)
-				$std = array_map(
-				  // apply from_model
-				  array($au, 'json_serialize'),
-				  // on each element of the internal array
-				  array_values($object->to_array())
-				);
-			// Return an array of stdClass
-			else
-				$std = Aurora_StdClass::from_collection($object);
-		} else {
+		if (
+		  !(
+		  ($mode_model = Aurora_Type::is_model($object)) OR
+		  (Aurora_Type::is_collection($object))
+		  )
+		) {
 			throw new InvalidArgumentException("Argument not an instance of Model or Collection");
 		}
-
+		// Get the Aurora_ class for this object
+		$au = Aurora_Core::factory($object, 'aurora');
+		// if $object is a Model
+		if ($mode_model) {
+			$result = static::_serialize($object, $au);
+			// if $object is a Collection
+		} else {
+			$callback = function ($model) use ($au) {
+				  return static::_serialize($model, $au);
+			  };
+			$result = array_map($callback, array_values($object->to_array()));
+		}
 		// return
-		return $std;
+		return $result;
+	}
+	protected static function _serialize($model, $aurora) {
+		// test if it implements json_serialize
+		if ($aurora instanceof Interface_Aurora_JSON_Serialize)
+			return $aurora->json_serialize($model);
+		// Return an stdClass
+		else if ($model instanceof JsonSerializable)
+			return $model->jsonSerialize();
+		else
+			return Aurora_StdClass::from_model($model);
 	}
 	/**
 	 * Convert from JSON to Model or Collection
@@ -84,16 +86,20 @@ class Aurora_Aurora_JSON
 	public static function deserialize($json, $type) {
 		// Get the Aurora_ class for this object
 		$au = Aurora_Type::is_aurora($type) ? $type : Aurora_Core::factory($type, 'aurora');
-		// test if it implements json_decode
-		if ($au instanceof Interface_Aurora_JSON_Deserialize)
-			return $au->json_deserialize($json);
-
-		// process: convert json to model or collection
-		$result = (is_array($json)) ?
-		  // if JSON is array return Collection
-		  Aurora_StdClass::to_collection($json, Aurora_Type::collection($type)) :
-		  // otherwise (if it is of type stdClass) return Model
-		  Aurora_StdClass::to_model($json, Aurora_Type::model($type));
+		// test if $json is an array
+		if (is_array($json)) {
+			// test if it implements Interface_Aurora_JSON_Deserialize
+			if ($au instanceof Interface_Aurora_JSON_Deserialize)
+				$result = array_map(array($au, 'json_deserialize'), $json);
+			else
+				$result = Aurora_StdClass::to_collection($json, Aurora_Type::collection($type));
+		} else {
+			// test if it implements Interface_Aurora_JSON_Deserialize
+			if ($au instanceof Interface_Aurora_JSON_Deserialize)
+				$result = $au->json_deserialize($json);
+			else
+				$result = Aurora_StdClass::to_model($json, Aurora_Type::model($type));
+		}
 		// return
 		return $result;
 	}

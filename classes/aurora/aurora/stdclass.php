@@ -15,8 +15,9 @@ defined('SYSPATH') or die('No direct script access.');
 class Aurora_Aurora_StdClass
 {
 	/**
-	 * Converts a model to stdClass
-	 * takes care of getters
+	 * Converts a model to something that is JSON serializable
+	 * basically an object of type stdClass
+	 * takes care of getters and converts them to standard properties
 	 *
 	 * @param Model $model
 	 * @return stdClass
@@ -109,7 +110,7 @@ class Aurora_Aurora_StdClass
 	 * @param Collection $collection
 	 * @return array
 	 */
-	public static function from_collection(Collection $collection) {
+	public static function from_collection(Aurora_Collection $collection) {
 		return array_map(
 		  // apply from_model
 		  array(get_called_class(), 'from_model'),
