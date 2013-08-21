@@ -15,11 +15,13 @@ class Aurora_Decorator
 {
 
 	protected $au;
+
 	public function __construct($au) {
 		if (!Aurora_Type::is_aurora($au))
 			throw new Kohana_Exception('Parameter must be an Aurora');
 		$this->au = $au;
 	}
+
 	/**
 	 * Factory method. Use this when you want to instantiate
 	 * your Aurora, decorated with the Aurora_Core methods.
@@ -33,14 +35,16 @@ class Aurora_Decorator
 
 		return new $decorator(new $vanilla);
 	}
+
 	/**
 	 * Get the internal, undecorated, vanilla Aurora
 	 *
 	 * @return Aurora
 	 */
-	public function vanilla(){
+	public function vanilla() {
 		return $this->au;
 	}
+
 	/**
 	 * Get a Kohana View with the JSON representation
 	 * of your model or Collection
@@ -58,6 +62,7 @@ class Aurora_Decorator
 	public function json_encode($object) {
 		return Au::json_encode($object);
 	}
+
 	/**
 	 * Convert from JSON to Model or Collection
 	 *
@@ -81,6 +86,7 @@ class Aurora_Decorator
 	public function json_decode($json) {
 		return Au::json_decode($json, $this->au);
 	}
+
 	/**
 	 * Check if your Model has an ID.
 	 *
@@ -93,6 +99,7 @@ class Aurora_Decorator
 	public function is_new($model) {
 		return Au::is_new($model);
 	}
+
 	/**
 	 * Check if your Model is loaded.
 	 * A loaded Model has an ID
@@ -106,6 +113,7 @@ class Aurora_Decorator
 	public function is_loaded($model) {
 		return Au::is_loaded($model);
 	}
+
 	/**
 	 * Load a model or collection from database
 	 * using Aurora
@@ -117,6 +125,7 @@ class Aurora_Decorator
 	public function load($params = NULL) {
 		return Au::load($this->au, $params);
 	}
+
 	/**
 	 *
 	 * @param type $object
@@ -129,6 +138,7 @@ class Aurora_Decorator
 			$object = $this->load($object);
 		Au::save($object);
 	}
+
 	/**
 	 *
 	 * @param type $object
@@ -141,6 +151,7 @@ class Aurora_Decorator
 			$object = $this->load($object);
 		Au::delete($object);
 	}
+
 	/**
 	 * Magic function to call your Aurora methods.
 	 * It gets triggered when you call a method other than
@@ -153,4 +164,5 @@ class Aurora_Decorator
 		call_user_func_array(array($this->au, $name), $arguments);
 		return $this;
 	}
+
 }

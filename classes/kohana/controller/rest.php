@@ -48,6 +48,7 @@ abstract class Kohana_Controller_REST extends Controller
 	 * @var string requested action
 	 */
 	protected $_action_requested = '';
+
 	/**
 	 * Checks the requested method against the available methods. If the method
 	 * is supported, sets the request action from the map. If not supported,
@@ -66,6 +67,7 @@ abstract class Kohana_Controller_REST extends Controller
 
 		return parent::before();
 	}
+
 	/**
 	 * undocumented function
 	 */
@@ -77,6 +79,7 @@ abstract class Kohana_Controller_REST extends Controller
 			$this->response->headers('cache-control', 'no-cache, no-store, max-age=0, must-revalidate');
 		}
 	}
+
 	/**
 	 * Sends a 405 "Method Not Allowed" response and a list of allowed actions.
 	 */
@@ -85,6 +88,7 @@ abstract class Kohana_Controller_REST extends Controller
 		$this->response->status(405)
 		  ->headers('Allow', implode(', ', array_keys($this->_action_map)));
 	}
+
 }
 
 // End REST

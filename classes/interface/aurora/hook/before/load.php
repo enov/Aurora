@@ -1,4 +1,6 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php
+
+defined('SYSPATH') or die('No direct script access.');
 
 /**
  * before_load hook. If your Aurora implements this interface
@@ -12,5 +14,6 @@
  */
 interface Interface_Aurora_Hook_Before_Load
 {
+
 	public function before_load(&$params);
 }

@@ -15,6 +15,7 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Aurora_Aurora_Database
 {
+
 	/**
 	 * returns the database config group
 	 *
@@ -23,6 +24,7 @@ class Aurora_Aurora_Database
 	public static function config($aurora) {
 		return isset($aurora->config) ? $aurora->config : 'default';
 	}
+
 	/**
 	 * returns the database config group
 	 *
@@ -31,6 +33,7 @@ class Aurora_Aurora_Database
 	public static function transactional($aurora) {
 		return isset($aurora->transactional) ? (bool) $aurora->transactional : TRUE;
 	}
+
 	/**
 	 * returns the name of the table
 	 * associated with this model
@@ -44,6 +47,7 @@ class Aurora_Aurora_Database
 	public static function table($aurora) {
 		return isset($aurora->table) ? $aurora->table : strtolower(Aurora_Type::cname($aurora)) . 's';
 	}
+
 	/**
 	 * returns the column name of the
 	 * primary key defined in the table
@@ -54,6 +58,7 @@ class Aurora_Aurora_Database
 	public static function pkey($aurora) {
 		return isset($aurora->pkey) ? $aurora->pkey : 'id';
 	}
+
 	/**
 	 * Returns the key/index of the id in the database result row
 	 *
@@ -70,6 +75,7 @@ class Aurora_Aurora_Database
 		$fetch_table_names = Arr::path($config, 'connection.fetch_table_names', FALSE);
 		return $fetch_table_names ? $table . '.' . $pkey : $pkey;
 	}
+
 	/**
 	 * Main Query (DB View) to be used by the
 	 * Model and corresponding Collection
@@ -82,9 +88,10 @@ class Aurora_Aurora_Database
 			return $aurora->qview;
 		else
 			return is_callable(array($aurora, 'qview')) ?
-				$aurora->qview() :
-				DB::select()->from(static::table($aurora));
+			  $aurora->qview() :
+			  DB::select()->from(static::table($aurora));
 	}
+
 	/**
 	 * DATABASE CRUD OPERATIONS
 	 */
@@ -95,6 +102,7 @@ class Aurora_Aurora_Database
 		// execute
 		return $query->execute($config);
 	}
+
 	protected static function build_query($aurora, $param) {
 		$table = static::table($aurora);
 		$query = static::qview($aurora);
@@ -129,6 +137,7 @@ class Aurora_Aurora_Database
 		}
 		return $query;
 	}
+
 	public static function insert($aurora, $row) {
 		// prepare variables
 		$table = static::table($aurora);
@@ -136,6 +145,7 @@ class Aurora_Aurora_Database
 		// run insert
 		return DB::insert($table)->columns(array_keys($row))->values(array_values($row))->execute($config);
 	}
+
 	public static function update($aurora, $row, $pk) {
 		// prepare variables
 		$table = static::table($aurora);
@@ -144,6 +154,7 @@ class Aurora_Aurora_Database
 		// run update
 		return DB::update($table)->set($row)->where($pkey, '=', $pk)->execute($config);
 	}
+
 	public static function delete($aurora, $pk) {
 		// prepare variables
 		$table = static::table($aurora);
@@ -154,6 +165,7 @@ class Aurora_Aurora_Database
 		// run delete
 		return DB::delete($table)->where($pkey, 'IN', $IDs)->execute($config);
 	}
+
 	/**
 	 * DATABASE TRANSACTIONS
 	 *
@@ -168,6 +180,7 @@ class Aurora_Aurora_Database
 	 *
 	 * ------ end note ------
 	 */
+
 	/**
 	 * START TRANSACTION
 	 *
@@ -183,6 +196,7 @@ class Aurora_Aurora_Database
 		  Database::instance($config)->begin() :
 		  FALSE;
 	}
+
 	/**
 	 * COMMIT TRANSACTION
 	 *
@@ -198,6 +212,7 @@ class Aurora_Aurora_Database
 		  Database::instance($config)->commit() :
 		  FALSE;
 	}
+
 	/**
 	 * ROLLBACK TRANSACTION
 	 *
@@ -213,4 +228,5 @@ class Aurora_Aurora_Database
 		  Database::instance($config)->rollback() :
 		  FALSE;
 	}
+
 }

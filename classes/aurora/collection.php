@@ -12,7 +12,9 @@
  * @see http://codeutopia.net/code/library/CU/Collection.php
  *
  */
-abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayAccess
+abstract class Aurora_Collection implements Countable,
+  IteratorAggregate,
+  ArrayAccess
 {
 
 	/**
@@ -28,6 +30,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	 * @var array description of the id property of the models
 	 */
 	protected $_pkey_property;
+
 	/**
 	 * Create a new collection instance.
 	 *
@@ -42,6 +45,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 
 		return new $class;
 	}
+
 	/**
 	 * Get Model from Collection given ID
 	 *
@@ -71,6 +75,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 		}
 		return NULL;
 	}
+
 	/**
 	 * Add a value into the collection
 	 * @param Model $model
@@ -80,6 +85,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 		// add to collection
 		return $this->offsetSet(NULL, $model);
 	}
+
 	/**
 	 * Remove a model from the collection
 	 *
@@ -92,6 +98,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 		$offset = array_search($model, $this->_collection, TRUE);
 		return $this->offsetUnset($offset);
 	}
+
 	/**
 	 * Determine if index exists
 	 * @param integer $index
@@ -101,6 +108,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 		$model = $this->get($id);
 		return isset($model);
 	}
+
 	/**
 	 * Return count of items in collection
 	 * Implements countable
@@ -109,6 +117,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	public function count() {
 		return count($this->_collection);
 	}
+
 	/**
 	 * Get the class name of the Model related to this Collection
 	 */
@@ -118,6 +127,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 			$this->_modelclass = Aurora_Type::model($this);
 		return $this->_modelclass;
 	}
+
 	/**
 	 * Determine if this value can be added to this collection
 	 * @param string $value
@@ -131,6 +141,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 		// It also checks the entire inheritance chain
 		return $value instanceof $this->_modelclass;
 	}
+
 	/**
 	 * Return an iterator
 	 * Implements IteratorAggregate
@@ -139,6 +150,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	public function getIterator() {
 		return new ArrayIterator($this->_collection);
 	}
+
 	/**
 	 * Set offset to value
 	 * Implements ArrayAccess
@@ -158,6 +170,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 		}
 		return $value;
 	}
+
 	/**
 	 * Unset offset
 	 * Implements ArrayAccess
@@ -168,6 +181,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 		unset($this->_collection[$offset]);
 		return TRUE;
 	}
+
 	/**
 	 * get an offset's value
 	 * Implements ArrayAccess
@@ -178,6 +192,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	public function offsetGet($offset) {
 		return $this->_collection[$offset];
 	}
+
 	/**
 	 * Determine if offset exists
 	 * Implements ArrayAccess
@@ -188,6 +203,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	public function offsetExists($offset) {
 		return isset($this->_collection[$offset]);
 	}
+
 	/**
 	 * Clear out the collection
 	 */
@@ -196,6 +212,7 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 		$this->_collection = array();
 		return $this;
 	}
+
 	/**
 	 * Get the underlying array
 	 * @return array
@@ -203,4 +220,5 @@ abstract class Aurora_Collection implements Countable, IteratorAggregate, ArrayA
 	public function &to_array() {
 		return $this->_collection;
 	}
+
 }

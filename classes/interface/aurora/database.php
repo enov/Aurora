@@ -1,4 +1,7 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php
+
+defined('SYSPATH') or die('No direct script access.');
+
 /**
  * Manual ORM interface. Those methods are called
  * on database read and write. "Aurora_" classes should
@@ -12,6 +15,8 @@
  */
 interface Interface_Aurora_Database
 {
+
 	public function db_persist($model);
+
 	public function db_retrieve($model, array $row);
 }

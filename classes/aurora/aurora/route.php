@@ -13,6 +13,7 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Aurora_Aurora_Route
 {
+
 	/**
 	 * Define routing scheme.
 	 * To be used in init.php of this module
@@ -50,6 +51,7 @@ class Aurora_Aurora_Route
 			return false;
 		}
 	}
+
 	/**
 	 * Reverse Routing
 	 * Get the uri from cname
@@ -62,4 +64,5 @@ class Aurora_Aurora_Route
 			'_', '/', strtolower($cname)
 		);
 	}
+
 }

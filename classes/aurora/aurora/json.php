@@ -18,6 +18,7 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Aurora_Aurora_JSON
 {
+
 	/**
 	 * Get a JSON encodable object from Model or Collection
 	 * Delegates job to your Aurora if custom implementation exists
@@ -48,27 +49,15 @@ class Aurora_Aurora_JSON
 		$au = Aurora_Core::factory($object, 'aurora');
 		// if $object is a Model
 		if ($mode_model) {
-			$result = static::_serialize($object, $au);
+			$result = static::from_model($object, $au);
 			// if $object is a Collection
 		} else {
-			$callback = function ($model) use ($au) {
-				  return static::_serialize($model, $au);
-			  };
-			$result = array_map($callback, array_values($object->to_array()));
+			$result = static::from_collection($object, $au);
 		}
 		// return
 		return $result;
 	}
-	protected static function _serialize($model, $aurora) {
-		// test if it implements json_serialize
-		if ($aurora instanceof Interface_Aurora_JSON_Serialize)
-			return $aurora->json_serialize($model);
-		// Return an stdClass
-		else if ($model instanceof JsonSerializable)
-			return $model->jsonSerialize();
-		else
-			return Aurora_StdClass::from_model($model);
-	}
+
 	/**
 	 * Convert from JSON to Model or Collection
 	 *
@@ -87,20 +76,161 @@ class Aurora_Aurora_JSON
 		// Get the Aurora_ class for this object
 		$au = Aurora_Type::is_aurora($type) ? $type : Aurora_Core::factory($type, 'aurora');
 		// test if $json is an array
-		if (is_array($json)) {
-			// test if it implements Interface_Aurora_JSON_Deserialize
-			if ($au instanceof Interface_Aurora_JSON_Deserialize)
-				$result = array_map(array($au, 'json_deserialize'), $json);
-			else
-				$result = Aurora_StdClass::to_collection($json, Aurora_Type::collection($type));
-		} else {
-			// test if it implements Interface_Aurora_JSON_Deserialize
-			if ($au instanceof Interface_Aurora_JSON_Deserialize)
-				$result = $au->json_deserialize($json);
-			else
-				$result = Aurora_StdClass::to_model($json, Aurora_Type::model($type));
-		}
+		if (is_array($json))
+			$result = static::to_collection($json, $type, $au);
+		else
+			$result = static::to_model($json, $type, $au);
 		// return
 		return $result;
 	}
+
+	/**
+	 * Converts a model to something that is JSON serializable
+	 * basically an object of type stdClass
+	 * takes care of getters and converts them to standard properties
+	 *
+	 * @param Model $model
+	 * @return stdClass
+	 */
+	public static function from_model($model, $aurora = NULL) {
+		// test for argument. Do we need this? Performance?
+		if (!Aurora_Type::is_model($model))
+			throw new InvalidArgumentException('Can not proceed conversion. Not a valid Model');
+		// create Aurora if empty
+		if (empty($aurora))
+			$aurora = Au::factory ($model);
+		// test if it implements json_serialize
+		if ($aurora instanceof Interface_Aurora_JSON_Serialize)
+			return $aurora->json_serialize($model);
+		// Return an stdClass
+		if ($model instanceof JsonSerializable)
+			return $model->jsonSerialize();
+		// Get the list of properties
+		$props = Aurora_Property::getters($model);
+		// Create the stdClass object
+		$std = new stdClass();
+		// loop through the list of props
+		foreach ($props as $prop => $arrProp) {
+			// get the value
+			$value = Aurora_Property::get($model, $prop);
+			// if $value is a Model
+			if (Aurora_Type::is_model($value)) {
+				$std->$prop = static::from_model($value, $aurora);
+			}
+			// if $value is a Collection
+			else if (Aurora_Type::is_collection($value)) {
+				$std->$prop = static::from_collection($value, $aurora);
+			}
+			// if $value is JsonSerializable
+			else if ($value instanceof JsonSerializable) {
+				$std->$prop = $value->jsonSerialize();
+			}
+			// Special care for DateTime. Is this generally acceptable?
+			else if ($value instanceof DateTime) {
+				$std->$prop = $value->format(DATE_ISO8601);
+			}
+			// if scalar?
+			else {
+				$std->$prop = $value;
+			}
+		}
+		return $std;
+	}
+
+	/**
+	 * Converts an stdClass to the specified Model
+	 *
+	 * @param stdClass $stdObj
+	 * @param Model/string $model
+	 * @return Model
+	 */
+	public static function to_model($stdObj, $model, $aurora = NULL) {
+		$model = Aurora_Type::is_model($model) ? $model : Aurora_Core::factory($model, 'model');
+		// create Aurora if empty
+		if (empty($aurora))
+			$aurora = Au::factory ($model);
+		// use custom json_deserialize if implemented
+		if ($aurora instanceof Interface_Aurora_JSON_Deserialize)
+			return $aurora->json_deserialize($stdObj);
+		// set primary key
+		$pkey = Aurora_Database::pkey($aurora);
+		if (property_exists($stdObj, $pkey)) {
+			Aurora_Property::set_pkey($model, $stdObj->$pkey);
+		}  // Get the list of properties
+		$props = Aurora_Property::setters($model);
+		// loop through the list of props
+		foreach ($props as $prop => $arrProp) {
+			// test if property exists
+			if (!property_exists($stdObj, $prop))
+				continue;
+			// get the value
+			$value = $stdObj->$prop;
+			// if property is primary key
+			if ($prop == Aurora_Database::pkey($aurora)) {
+				// we already did this above
+				continue;
+			}
+			// if property is setter
+			if ($arrProp['type'] == 'method' AND $value !== NULL) {
+				$setter = 'set_' . $prop;
+				$typehint = Aurora_Reflection::typehint($model, $setter);
+				$classname_only = TRUE;
+				if (Aurora_Type::is_collection($typehint, $classname_only)) {
+					$value = static::to_collection($value, $typehint, $aurora);
+				} else if (Aurora_Type::is_model($typehint, $classname_only)) {
+					$value = static::to_model($value, $typehint, $aurora);
+				} else if ($typehint === 'DateTime') {
+					$value = new DateTime($value);
+				}
+			}
+			Aurora_Property::set($model, $prop, $value);
+		}
+		return $model;
+	}
+
+	/**
+	 * Converts a collection (an object of type Collection)
+	 * to an array of stdClass
+	 *
+	 * @param Collection $collection
+	 * @return array
+	 */
+	public static function from_collection(Aurora_Collection $collection, $aurora = NULL) {
+		// create Aurora if empty
+		if (empty($aurora))
+			$aurora = Au::factory ($collection);
+		$static = __CLASS__;
+		return array_map(
+		  // apply from_model
+		  function ($model) use ($static, $aurora) {
+			  return $static::from_model($model, $aurora);
+		  },
+		  // on each element of the internal array
+		  array_values($collection->to_array())
+		);
+	}
+
+	/**
+	 * Converts an array of stdClass to
+	 * the specified collection
+	 *
+	 * @param array $std_array
+	 * @param Collection/string $collection
+	 * @return Collection
+	 */
+	public static function to_collection($std_array, $collection, $aurora = NULL) {
+		$collection = Aurora_Type::is_collection($collection) ? $collection : Aurora_Core::factory($collection, 'collection');
+		// create Aurora if empty
+		if (empty($aurora))
+			$aurora = Au::factory ($collection);
+		/* @var $collection Collection */
+		$collection->clear();
+		$model_classname = Aurora_Type::model($collection);
+		foreach ($std_array as $stdObj) {
+			$m = static::to_model($stdObj, $model_classname, $aurora);
+			$collection->add($m);
+		}
+		return $collection;
+	}
+
 }

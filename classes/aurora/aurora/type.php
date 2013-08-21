@@ -14,6 +14,7 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Aurora_Aurora_Type
 {
+
 	/**
 	 * Get the classname of $object
 	 *
@@ -27,6 +28,7 @@ class Aurora_Aurora_Type
 			return $object;
 		return FALSE;
 	}
+
 	/**
 	 * Get the common name from $object, a common name is the name of the concept
 	 * that we are modeling.
@@ -55,6 +57,7 @@ class Aurora_Aurora_Type
 		//return
 		return $cname;
 	}
+
 	/**
 	 * Get the classname of the Model related to the $object.
 	 * for ex: if $object is of type Collection_Person, the function returns
@@ -66,6 +69,7 @@ class Aurora_Aurora_Type
 	public static function model($object) {
 		return 'Model_' . static::cname($object);
 	}
+
 	/**
 	 * Get the classname of the Collection related to the $object.
 	 * for ex: if $object is of type Aurora_Person, the function returns
@@ -77,6 +81,7 @@ class Aurora_Aurora_Type
 	public static function collection($object) {
 		return 'Collection_' . static::cname($object);
 	}
+
 	/**
 	 * Get the classname of the Aurora related to the $object.
 	 * for ex: if $object is of type Model_Person, the function returns
@@ -88,6 +93,7 @@ class Aurora_Aurora_Type
 	public static function aurora($object) {
 		return 'Aurora_' . static::cname($object);
 	}
+
 	/**
 	 * Get the classname of the Controller_API related to the $object.
 	 * for ex: if $object is of type Model_Person, the function returns
@@ -99,6 +105,7 @@ class Aurora_Aurora_Type
 	public static function controller_api($object) {
 		return 'Controller_API_' . static::cname($object);
 	}
+
 	/**
 	 * Test if $object is a Model
 	 *
@@ -114,6 +121,7 @@ class Aurora_Aurora_Type
 			  preg_match($pattern, static::classname($object)) AND
 			  $object instanceof Interface_Aurora_Database;
 	}
+
 	/**
 	 * Test if $object is a Model
 	 *
@@ -129,6 +137,7 @@ class Aurora_Aurora_Type
 			  preg_match($pattern, static::classname($object)) AND
 			  is_object($object);
 	}
+
 	/**
 	 * Test if $object is a Collection
 	 *
@@ -144,6 +153,7 @@ class Aurora_Aurora_Type
 			  preg_match($pattern, static::classname($object)) AND
 			  $object instanceof Aurora_Collection;
 	}
+
 	/**
 	 * Test if $object is a Controller_API
 	 *
@@ -159,4 +169,5 @@ class Aurora_Aurora_Type
 			  preg_match($pattern, static::classname($object)) AND
 			  $object instanceof Controller_API;
 	}
+
 }

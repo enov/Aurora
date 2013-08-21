@@ -17,6 +17,7 @@ class Aurora_Aurora_Property
 
 	protected static $cache_prop;
 	protected static $cache_pkey;
+
 	/**
 	 * Get the list of all public properties
 	 * as well as the getters of your model
@@ -28,6 +29,7 @@ class Aurora_Aurora_Property
 	public static function getters($model) {
 		return static::properties($model, 'get');
 	}
+
 	/**
 	 * Get the list of all public properties
 	 * as well as the setters of your model
@@ -39,6 +41,7 @@ class Aurora_Aurora_Property
 	public static function setters($model) {
 		return static::properties($model, 'set');
 	}
+
 	protected static function properties($model, $dir) {
 		if ($dir != 'get' AND $dir != 'set')
 			throw new Kohana_Exception('direction should be either set or get');
@@ -71,6 +74,7 @@ class Aurora_Aurora_Property
 		// cache and return
 		return static::$cache_prop[$dir][$classname] = $properties;
 	}
+
 	/**
 	 * Aurora "magic" (LOL) get for models
 	 * taking into account getters
@@ -92,6 +96,7 @@ class Aurora_Aurora_Property
 			return $model->$method();
 		}
 	}
+
 	/**
 	 * Aurora "magic" (LOL again) set for models
 	 * taking into account setters
@@ -114,6 +119,7 @@ class Aurora_Aurora_Property
 			return $model->$method($value);
 		}
 	}
+
 	/**
 	 * A function to get the DESCRIPTION of the ID
 	 * PROPERTY or GETTER of the Model
@@ -132,6 +138,7 @@ class Aurora_Aurora_Property
 		$all_props = static::getters($model);
 		return $all_props[$pkey];
 	}
+
 	/**
 	 * Get the VALUE of the ID of the Model.
 	 *
@@ -160,6 +167,7 @@ class Aurora_Aurora_Property
 		}
 		throw new Kohana_Exception('Primary key not defined in model');
 	}
+
 	/**
 	 * A function to set the value of the ID
 	 * of the Model.
@@ -203,4 +211,5 @@ class Aurora_Aurora_Property
 		// Man, where's your ID?
 		throw $e;
 	}
+
 }

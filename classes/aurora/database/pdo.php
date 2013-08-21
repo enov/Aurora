@@ -9,17 +9,18 @@
  */
 class Aurora_Database_PDO extends Kohana_Database_PDO
 {
+
 	public function connect() {
 		if ($this->_connection)
 			return;
 
 		// Extract the connection parameters, adding required variabels
 		extract($this->_config['connection'] + array(
-			'dsn'				 => '',
-			'username'			 => NULL,
-			'password'			 => NULL,
-			'persistent'		 => FALSE,
-			'fetch_table_names'	 => FALSE,
+			'dsn' => '',
+			'username' => NULL,
+			'password' => NULL,
+			'persistent' => FALSE,
+			'fetch_table_names' => FALSE,
 		));
 
 		// Clear the connection parameters for security
@@ -50,4 +51,5 @@ class Aurora_Database_PDO extends Kohana_Database_PDO
 			$this->set_charset($this->_config['charset']);
 		}
 	}
+
 }

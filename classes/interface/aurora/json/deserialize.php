@@ -1,4 +1,6 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php
+
+defined('SYSPATH') or die('No direct script access.');
 
 /**
  * Interface for custom JSON decoding.
@@ -11,6 +13,7 @@
  */
 interface Interface_Aurora_JSON_Deserialize
 {
+
 	/**
 	 *
 	 * @param stdClass/array $json a stdClass or an array of stdClass

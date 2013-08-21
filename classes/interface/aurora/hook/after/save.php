@@ -1,4 +1,6 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php
+
+defined('SYSPATH') or die('No direct script access.');
 
 /**
  * after_save hook. If your Aurora implements this interface
@@ -12,5 +14,6 @@
  */
 interface Interface_Aurora_Hook_After_Save
 {
+
 	public function after_save($model_or_collection);
 }

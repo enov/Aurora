@@ -1,4 +1,6 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php
+
+defined('SYSPATH') or die('No direct script access.');
 
 /**
  * before_update hook. If your Aurora implements this interface
@@ -12,5 +14,6 @@
  */
 interface Interface_Aurora_Hook_Before_Update
 {
+
 	public function before_update($model);
 }

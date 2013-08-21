@@ -1,4 +1,7 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php
+
+defined('SYSPATH') or die('No direct script access.');
+
 /**
  * Interface for custom JSON encoding
  *
@@ -10,6 +13,7 @@
  */
 interface Interface_Aurora_JSON_Serialize
 {
+
 	/**
 	 *
 	 * @param Model/Collection $model

@@ -1,4 +1,6 @@
-<?php defined('SYSPATH') or die('No direct access allowed.');
+<?php
+
+defined('SYSPATH') or die('No direct access allowed.');
 
 return array
 	(
@@ -8,8 +10,8 @@ return array
 	 * see the last config variable in this file
 	 */
 	'default' => array(
-		'type'				 => 'pdo',
-		'connection'		 => array(
+		'type' => 'pdo',
+		'connection' => array(
 			/**
 			 * The following options are available for PDO:
 			 *
@@ -18,9 +20,9 @@ return array
 			 * string   password    database password
 			 * boolean  persistent  use persistent connections?
 			 */
-			'dsn'		 => 'mysql:host=localhost;dbname=kohana',
-			'username'	 => 'root',
-			'password'	 => 'r00tdb',
+			'dsn' => 'mysql:host=localhost;dbname=kohana',
+			'username' => 'root',
+			'password' => 'r00tdb',
 			'persistent' => FALSE,
 			/**
 			 * Prepend the containing table name to each column name returned
@@ -29,16 +31,16 @@ return array
 			 * @see PDO::ATTR_FETCH_TABLE_NAMES
 			 * @link http://php.net/manual/en/pdo.constants.php PDO::ATTR_FETCH_TABLE_NAMES
 			 */
-			'fetch_table_names'	 => TRUE,
+			'fetch_table_names' => TRUE,
 		),
 		/**
 		 * The following extra options are available for PDO:
 		 *
 		 * string   identifier  set the escaping identifier
 		 */
-		'table_prefix'		 => '',
-		'charset'			 => 'utf8',
-		'caching'			 => FALSE,
-		'profiling'			 => TRUE,
+		'table_prefix' => '',
+		'charset' => 'utf8',
+		'caching' => FALSE,
+		'profiling' => TRUE,
 	),
 );

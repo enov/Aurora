@@ -18,6 +18,7 @@ class Aurora_Aurora_Profiler
 	 * @var string The profiling category under which benchmarks will appear
 	 */
 	protected static $category = 'Aurora';
+
 	/**
 	 * Add a profiling mark and start counter
 	 *
@@ -35,6 +36,7 @@ class Aurora_Aurora_Profiler
 		  FALSE;
 		return $benchmark;
 	}
+
 	/**
 	 * Stop a profiling mark
 	 *
@@ -46,6 +48,7 @@ class Aurora_Aurora_Profiler
 			Profiler::stop($benchmark);
 		}
 	}
+
 	/**
 	 * Delete a profiling mark
 	 *
@@ -57,4 +60,5 @@ class Aurora_Aurora_Profiler
 			Profiler::delete($benchmark);
 		}
 	}
+
 }
