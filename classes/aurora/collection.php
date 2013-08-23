@@ -4,9 +4,10 @@
  * Generic Collection class
  *
  * @package Aurora
+ * @category Collection
  * @author Samuel Demirdjian
  * @copyright (c) 2013, Samuel Demirdjian
- * @license http://license.enov.ws/mit MIT
+ * @license http://enov.mit-license.org MIT
  *
  * @see http://aheimlich.dreamhosters.com/generic-collections/Collection.phps
  * @see http://codeutopia.net/code/library/CU/Collection.php

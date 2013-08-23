@@ -4,6 +4,25 @@
  * Overrides the connect function of the default Database_PDO
  * class to support fetching the table names in the result sets.
  *
+ * example:
+ *
+ *     $rowset = DB::select()->from('mytable')
+ *                 ->join('mycategory')
+ *                 ->on('mytable.cat_id', '=', 'mycategory.id')
+ *                 ->execute('pdo');
+ *
+ *     foreach ($rowset as $row) {
+ *         $id = $row['mytable.id']; // instead of $row['id']
+ *         $cat_name = $row['mycategory.name'];
+ *     }
+ *
+ * This helps you query the database once and load related, nested Models.
+ *
+ * @package Aurora
+ * @category Database
+ * @author Samuel Demirdjian
+ * @copyright (c) 2013, Samuel Demirdjian
+ * @license http://enov.mit-license.org MIT
  * @see PDO::ATTR_FETCH_TABLE_NAMES
  * @link http://php.net/manual/en/pdo.constants.php PDO::ATTR_FETCH_TABLE_NAMES
  */

@@ -6,9 +6,10 @@ defined('SYSPATH') or die('No direct script access.');
  * Helper class to work with Kohana Profiler
  *
  * @package Aurora
+ * @category Profiler
  * @author Samuel Demirdjian
  * @copyright (c) 2013, Samuel Demirdjian
- * @license http://license.enov.ws/mit MIT
+ * @license http://enov.mit-license.org MIT
  *
  */
 class Aurora_Aurora_Profiler

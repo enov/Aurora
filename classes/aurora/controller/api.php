@@ -24,10 +24,10 @@
  * Generally, this class should only be used for web services and APIs.
  *
  * @package Aurora
- * @category API
+ * @category RESTful API
  * @author Samuel Demirdjian
  * @copyright (c) 2013 Samuel Demirdjian
- * @license http://license.enov.ws/mit MIT
+ * @license http://enov.mit-license.org MIT
  */
 class Aurora_Controller_API extends Controller_REST
 {
