@@ -21,7 +21,12 @@ properties and exposes a RESTlike interface.
 Backbone.js is a first class citizen at Aurora. The "RESTful" API of Aurora is
 primarily intended to be consumed by Backbone.js.
 
-## Nomenclature
+Nomenclature
+---------------
 
 Aurora is named after my wife, **Arshalous**. It is the Armenian word for
-"aurora", (literally *twilight of the dawn*).
+"aurora". Literally:
+<dl>
+  <dt>Արշալոյս</dt>
+  <dd>twilight of the dawn</dd>
+</dl>
