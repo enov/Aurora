@@ -35,7 +35,7 @@ Defaults to: default
 [!!] Aurora has a hacked version of Kohana_Database_PDO where it allows
 to have "namespaced" / or "fully-qualified" column names, that is
 table names along the column names, separated with a dot. You can see
-an example of this in the example **db_retrieve** function above. You
+an example of this above, in the example **db_retrieve** function. You
 need to add a configuration flag in the config group of the database.
 An example of a database config group is available with the module.
 

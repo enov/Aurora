@@ -23,5 +23,5 @@ primarily intended to be consumed by Backbone.js.
 
 ## Nomenclature
 
-Aurora is named after my wife, **Arshalous Kazezian**. "Arshalous" is the
-Armenian word for "aurora", or "twilight of the dawn".
+Aurora is named after my wife, **Arshalous**. It is the Armenian word for
+"aurora", (literally *twilight of the dawn*).
