@@ -2,7 +2,27 @@
 
 Aurora helps you to expose a REST-like API by extending the Controller_API.
 
-Example:
+## Optional Automatic routing
+
+### Steps to enable automatic routing
+
+In order to have automatic routing to your API controllers:
+
+1. Name your API controllers by starting with "Controller_API_"
+
+2. Extend them from Controller_API
+
+3. Enable the Aurora_Route::route built-in route in your bootstrap
+
+You may want to place it as your first route, as it will first try to match
+routes that start with 'api/'.
+
+
+	Route::set('api', array('Aurora_Route', 'route'));
+
+
+
+### Example
 
 	class Controller_API_Calendar_Event extends Controller_API
 	{
