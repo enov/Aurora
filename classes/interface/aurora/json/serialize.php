@@ -3,7 +3,7 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Interface for custom JSON encoding
+ * Interface for custom JSON serialization
  *
  * @package Aurora
  * @category Interfaces
@@ -16,11 +16,12 @@ interface Interface_Aurora_JSON_Serialize
 {
 
 	/**
-	 *
-	 * @param Model/Collection $model
-	 * @return mixed a stdClass or an array of stdClass or any type that can be
-	 *         serialized, if you think your model can be serialized,
-	 *         just return it
+	 * function for custom JSON serialization
+	 * 
+	 * @param Model $model
+	 * @return mixed You can return an stdClass or any type that PHP can
+	 *			natively serialize, if you believe your model can be serialized,
+	 *          just return the parameter.
 	 *
 	 */
 	public function json_serialize($model);

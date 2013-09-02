@@ -45,12 +45,13 @@ class Aurora_Aurora_Type
 		$classname = static::classname($object) ? : (string) $object;
 		$cname = preg_replace(
 		  array(
-			'/^Model_/',
-			'/^Collection_/',
-			'/^Aurora_/',
-			'/^Controller_API_/',
+			'/^Model/',
+			'/^Collection/',
+			'/^Aurora/',
+			'/^Controller_API/',
 		  ), '', $classname
 		);
+		$cname = preg_replace('/^_/', '', $cname);
 		// class Aurora_$cname must exist
 		if (!class_exists('Aurora_' . $cname))
 			throw new Kohana_Exception('Can not find common name');

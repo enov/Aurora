@@ -3,7 +3,7 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Interface for custom JSON decoding.
+ * Interface for custom JSON deserialization.
  *
  * @package Aurora
  * @category Interfaces
@@ -16,9 +16,10 @@ interface Interface_Aurora_JSON_Deserialize
 {
 
 	/**
+	 * function for custom JSON deserialization
 	 *
-	 * @param stdClass/array $json a stdClass or an array of stdClass
-	 * @return Model/Collection Deserialized Model or Collection
+	 * @param stdClass $json
+	 * @return Model Deserialized Model
 	 */
 	public function json_deserialize($json);
 }
