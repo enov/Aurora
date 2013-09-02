@@ -11,4 +11,5 @@
       - [Filter, Order, Limit](advanced_filter)
       - [Hooks](advanced_hooks)
       - [Custom JSON](advanced_json)
+   - [Miscellaneous](miscellaneous)
    - [License](license)
