@@ -10,7 +10,7 @@ return array
 	 * see the last config variable in this file
 	 */
 	'default' => array(
-		'type' => 'pdo',
+		'type' => 'PDO',
 		'connection' => array(
 			/**
 			 * The following options are available for PDO:
