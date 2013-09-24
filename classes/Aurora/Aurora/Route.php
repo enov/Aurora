@@ -15,41 +15,91 @@ class Aurora_Aurora_Route
 {
 
 	/**
+	 * @var array REST types
+	 */
+	protected static $_action_map = array
+		(
+		HTTP_Request::GET => 'index',
+		HTTP_Request::PUT => 'update',
+		HTTP_Request::POST => 'create',
+		HTTP_Request::DELETE => 'delete',
+	);
+
+	/**
 	 * Define routing scheme.
 	 * To be used in init.php of this module
 	 *
 	 * @param string $uri
 	 * @return array/boolean
 	 */
-	public static function route($uri) {
-		$pieces = explode('/', $uri);
-		// if $uri does not start with 'api/' return false
-		$api = array_shift($pieces);
-		if ($api != 'api')
-			return false;
+	public static function map($route, $params, $request) {
+		// find the controller
+		$params = static::map_path($route, $params, $request);
+		// find the action
+		$params = static::map_method($route, $params, $request);
+		// return
+		return $params;
+	}
+
+	/**
+	 * Maps $params['path'] to the controller
+	 *
+	 * @param Route $route
+	 * @param array $params
+	 * @param Request $request
+	 * @return array
+	 * @throws Kohana_Exception
+	 */
+	public static function map_path($route, $params, $request) {
+		if (!isset($params['path']))
+			throw new Kohana_Exception('Params should include path.');
+		$pieces = explode('/', $params['path']);
 		// Get the last piece of the uri and test if it contains a numeric ID
 		$last = array_pop($pieces);
 		if (Valid::digit($last)) {
 			$id = $last;
-			$controller = array_pop($pieces);
+			$controller = ucfirst(array_pop($pieces));
 		} else {
 			$id = NULL;
-			$controller = $last;
+			$controller = ucfirst($last);
 		}
-		// construct $directory and common_name
-		$directory = $api . ($pieces ? DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $pieces) : '' );
-		// See if exists a Controller of the form
-		// Controller_API_Common_Name
-		if (Kohana::find_file('classes/controller', $directory . DIRECTORY_SEPARATOR . $controller)) {
-			return array(
-				'directory' => $directory,
-				'controller' => $controller,
-				'id' => $id,
-			);
-		} else {
-			// no luck, return false
-			return false;
+		// construct $directory and cname
+		$directory = 'API';
+		foreach ($pieces as $folder) {
+			$directory .= DIRECTORY_SEPARATOR . ucfirst($folder);
 		}
+		// See if exists a Controller of the form Controller_API_Common_Name
+		$file = 'Controller' . DIRECTORY_SEPARATOR .
+		  $directory . DIRECTORY_SEPARATOR .
+		  $controller;
+		if (!Kohana::find_file('classes', $file))
+			throw new Kohana_Exception('Could not find a controller at ' . $file);
+		// return $params
+		$params['directory'] = $directory;
+		$params['controller'] = $controller;
+		$params['id'] = $id;
+		return $params;
+	}
+
+	/**
+	 * Maps $request->method() to the controller action
+	 *
+	 * @param Route $route
+	 * @param array $params
+	 * @param Request $request
+	 * @return array
+	 * @throws Kohana_Exception
+	 */
+	public static function map_method($route, $params, $request) {
+		// get the method from request
+		$method = $request->method();
+		// throw 'not allowed' http exception if method not available
+		if (!isset(static::$_action_map[$method]))
+			throw HTTP_Exception::factory(405)->allowed(array_keys(static::$_action_map));
+		// set the action
+		$params['action'] = static::$_action_map[$method];
+		//return $params
+		return $params;
 	}
 
 	/**

@@ -29,7 +29,7 @@
  * @copyright (c) 2013 Samuel Demirdjian
  * @license http://enov.mit-license.org MIT
  */
-class Aurora_Controller_API extends Controller_REST
+class Aurora_Controller_API extends Controller
 {
 
 	public function action_index() {
@@ -71,6 +71,11 @@ class Aurora_Controller_API extends Controller_REST
 
 	public function after() {
 		$this->response->headers('Content-type', 'application/json');
+		if (in_array(Arr::get($_SERVER, 'HTTP_X_HTTP_METHOD_OVERRIDE', $this->request->method()), array(
+			  HTTP_Request::PUT,
+			  HTTP_Request::POST,
+			  HTTP_Request::DELETE)))
+			$this->response->headers('cache-control', 'no-cache, no-store, max-age=0, must-revalidate');
 		parent::after();
 	}
 
