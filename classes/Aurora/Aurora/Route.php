@@ -42,7 +42,13 @@ class Aurora_Aurora_Route
 	}
 
 	/**
-	 * Maps $params['path'] to the controller
+	 * Maps `<path>` (or `$params['path']`) to the respective controller.
+	 * Also, allows config routing
+	 *
+	 * Usage: In your bootstrap.php set the following route:
+	 *
+	 *     Route::set('rest-api', 'api/<path>', array('path' => '.*'))
+	 *       ->filter(array('Aurora_Route', 'map_path'));
 	 *
 	 * @param Route $route
 	 * @param array $params
@@ -51,8 +57,10 @@ class Aurora_Aurora_Route
 	 * @throws Kohana_Exception
 	 */
 	public static function map_path($route, $params, $request) {
+		// test if `<path>` exists in params
 		if (!isset($params['path']))
 			throw new Kohana_Exception('Params should include path.');
+		// explode path to pieces
 		$pieces = explode('/', $params['path']);
 		// Get the last piece of the uri and test if it contains a numeric ID
 		$last = array_pop($pieces);
@@ -65,19 +73,33 @@ class Aurora_Aurora_Route
 		}
 		// construct $directory and cname
 		$directory = 'API';
+		$common_name = '';
 		foreach ($pieces as $folder) {
 			$directory .= DIRECTORY_SEPARATOR . ucfirst($folder);
+			$common_name = ucfirst($folder) . '_';
 		}
-		// See if exists a Controller of the form Controller_API_Common_Name
+		$common_name .= $controller;
+		// Test for the existance of a controller `Controller_API_Common_Name`
 		$file = 'Controller' . DIRECTORY_SEPARATOR .
 		  $directory . DIRECTORY_SEPARATOR .
 		  $controller;
-		if (!Kohana::find_file('classes', $file))
-			throw new Kohana_Exception('Could not find a controller at ' . $file);
+		if (Kohana::find_file('classes', $file)) {
+			$params['directory'] = $directory;
+			$params['controller'] = $controller;
+			$params['id'] = $id;
+		}
+		// if no `Controller_API_Common_Name` test if routing via config exists
+		else if (in_array($common_name, Kohana::$config->load('routes.api'))) {
+			$params['directory'] = NULL;
+			$params['controller'] = 'API';
+			$params['common_name'] = $common_name;
+			$params['id'] = $id;
+		}
+		// Throw HTTP 404 as the resource not available to the RESTful API
+		else {
+			throw new HTTP_Exception_404('Could not find a resource for ' . $common_name);
+		}
 		// return $params
-		$params['directory'] = $directory;
-		$params['controller'] = $controller;
-		$params['id'] = $id;
 		return $params;
 	}
 
