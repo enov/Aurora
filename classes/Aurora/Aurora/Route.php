@@ -36,7 +36,8 @@ class Aurora_Aurora_Route
 		// find the controller
 		$params = static::map_path($route, $params, $request);
 		// find the action
-		$params = static::map_method($route, $params, $request);
+		if ($params !== FALSE)
+			$params = static::map_method($route, $params, $request);
 		// return
 		return $params;
 	}
@@ -59,7 +60,7 @@ class Aurora_Aurora_Route
 	public static function map_path($route, $params, $request) {
 		// test if `<path>` exists in params
 		if (!isset($params['path']))
-			throw new Kohana_Exception('Params should include path.');
+			return false;
 		// explode path to pieces
 		$pieces = explode('/', $params['path']);
 		// Get the last piece of the uri and test if it contains a numeric ID
@@ -87,17 +88,18 @@ class Aurora_Aurora_Route
 			$params['directory'] = $directory;
 			$params['controller'] = $controller;
 			$params['id'] = $id;
-		}
-		// if no `Controller_API_Common_Name` test if routing via config exists
-		else if (in_array($common_name, Kohana::$config->load('routes.api'))) {
+		} else if (in_array($common_name, (array) Kohana::$config->load('routes.api'))) {
+			// if no `Controller_API_Common_Name` test if routing via config exists
 			$params['directory'] = NULL;
 			$params['controller'] = 'API';
 			$params['common_name'] = $common_name;
 			$params['id'] = $id;
-		}
-		// Throw HTTP 404 as the resource not available to the RESTful API
-		else {
-			throw new HTTP_Exception_404('Could not find a resource for ' . $common_name);
+		} else {
+			// it's not a good idea to throw exceptions from parsing routes
+			// because it would interfere with the work of other routes
+			//
+			// throw new HTTP_Exception_404('Could not find a resource for ' . $common_name);
+			$params = false;
 		}
 		// return $params
 		return $params;
