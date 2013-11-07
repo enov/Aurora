@@ -45,7 +45,9 @@ class Aurora_Aurora_Database
 	 * @return string
 	 */
 	public static function table($aurora) {
-		return isset($aurora->table) ? $aurora->table : strtolower(Aurora_Type::cname($aurora)) . 's';
+		return isset($aurora->table) ?
+		  $aurora->table :
+		  Inflector::plural(strtolower(Aurora_Type::cname($aurora)));
 	}
 
 	/**
