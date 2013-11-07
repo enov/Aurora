@@ -1,24 +1,31 @@
-# Expose Your API
+# Expose Your RESTful API
 
-Aurora helps you to expose a REST-like API by extending the Controller_API.
+Aurora helps you to expose your Models to a RESTful API. This way you can CRUD
+your Models directly from Backbone.js.
 
-## Optional Automatic routing
+## Steps to enable a RESTful API
 
-### Steps to enable automatic routing
+In order to have automatic routing to your RESTful API:
 
-In order to have automatic routing to your API controllers:
+1. In your bootstrap, Set this route with a filter to the Aurora_Route::map
 
-1. Name your API controllers by starting with "Controller_API_"
+        // Aurora RESTful API
+        Route::set('RESTful-api', 'api/<path>', array('path' => '.*'))
+          ->filter(array('Aurora_Route', 'map'));
 
-2. Extend them from Controller_API
+2. Either create a controller or make use of config based routing:
 
-3. Enable the Aurora_Route::route built-in route in your bootstrap
+  2.1. Name your API controllers by starting with "Controller_API_"
+  and Extend them from Controller_API
 
-You may want to place it as your first route, as it will first try to match
-routes that start with 'api/'.
+  2.2. Add a config file routes.php in your `config` folder
 
-
-	Route::set('api', array('Aurora_Route', 'route'));
+            return array(
+                'api' => array(
+                    'Calendar_Category',
+                    'Calendar_Event',
+                ),
+            );
 
 
 
@@ -46,3 +53,5 @@ automatically published via REST.
 	// will delete an existing Model_Calendar_Event with id 1
 	**DELETE** /api/calendar/event/1
 
+[!!] You may want to place the default API route as your last route,
+or just before your default catch-all route

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract Controller class for RESTful controller mapping. Supports GET, PUT,
+ * Controller class for RESTful controller mapping. Supports GET, PUT,
  * POST, and DELETE. By default, these methods will be mapped to these actions:
  *
  * GET
@@ -19,10 +19,6 @@
  * Additional methods can be supported by adding the method and action to
  * the `$_action_map` property.
  *
- * [!!] Using this class within a website will require heavy modification,
- * due to most web browsers only supporting the GET and POST methods.
- * Generally, this class should only be used for web services and APIs.
- *
  * @package Aurora
  * @category RESTful API
  * @author Samuel Demirdjian
@@ -33,7 +29,7 @@ class Aurora_Controller_API extends Controller
 {
 
 	public function action_index() {
-		$cname = Au::type()->cname($this);
+		$cname = $this->cname();
 		$id = $this->request->param('id', NULL);
 		$m_or_c = Au::load($cname, $id);
 		$json_str = Au::json_encode($m_or_c);
@@ -41,7 +37,7 @@ class Aurora_Controller_API extends Controller
 	}
 
 	public function action_create() {
-		$cname = Au::type()->cname($this);
+		$cname = $this->cname();
 		$m = Au::json_decode($this->request->body(), $cname);
 		Au::save($m);
 		$json_str = Au::json_encode($m);
@@ -49,7 +45,7 @@ class Aurora_Controller_API extends Controller
 	}
 
 	public function action_update() {
-		$cname = Au::type()->cname($this);
+		$cname = $this->cname();
 		$m = Au::json_decode($this->request->body(), $cname);
 		Au::save($m);
 		$json_str = Au::json_encode($m);
@@ -57,7 +53,7 @@ class Aurora_Controller_API extends Controller
 	}
 
 	public function action_delete() {
-		$cname = Au::type()->cname($this);
+		$cname = $this->cname();
 		$id = $this->request->param('id', NULL);
 		if (is_null($id))
 			throw new HTTP_Exception_404('No Model ID provided for deletion');
@@ -67,6 +63,10 @@ class Aurora_Controller_API extends Controller
 		Au::delete($m);
 		$json_str = Au::json_encode($m);
 		$this->response->body($json_str);
+	}
+
+	public function cname() {
+		return $this->request->param('cname') ? : Au::type()->cname($this);
 	}
 
 	public function after() {

@@ -81,38 +81,55 @@ class Aurora_Aurora_Route
 		}
 		$common_name .= $controller;
 		// Test for the existance of a controller `Controller_API_Common_Name`
-		$file = 'Controller' . DIRECTORY_SEPARATOR .
-		  $directory . DIRECTORY_SEPARATOR .
-		  $controller;
+		$file = 'Controller'
+		  . DIRECTORY_SEPARATOR . $directory
+		  . DIRECTORY_SEPARATOR . $controller;
 		if (Kohana::find_file('classes', $file)) {
 			$params['directory'] = $directory;
 			$params['controller'] = $controller;
 			$params['id'] = $id;
-		} else if (in_array($common_name, (array) Kohana::$config->load('routes.api'))) {
-			// if no `Controller_API_Common_Name` test if routing via config exists
+			return $params;
+		}
+		// if no `Controller_API_Common_Name` test if routing via config exists
+		if (in_array($common_name, (array) Kohana::$config->load('routes.api'))) {
 			$params['directory'] = NULL;
 			$params['controller'] = 'API';
-			$params['common_name'] = $common_name;
+			$params['cname'] = $common_name;
 			$params['id'] = $id;
-		} else {
-			// it's not a good idea to throw exceptions from parsing routes
-			// because it would interfere with the work of other routes
-			//
-			// throw new HTTP_Exception_404('Could not find a resource for ' . $common_name);
-			$params = false;
+			return $params;
 		}
-		// return $params
-		return $params;
+		// throw new HTTP_Exception_404('Could not find a resource for ' . $common_name) ?
+		// it's not a good idea to throw exceptions from parsing routes
+		// because it would interfere with the work of other routes
+		return FALSE;
 	}
 
 	/**
 	 * Maps $request->method() to the controller action
+	 * Supports GET, PUT, POST, and DELETE.
+	 * By default, these methods will be mapped to these actions:
+	 *
+	 * GET
+	 * : Mapped to the "index" action, lists all objects
+	 *
+	 * POST
+	 * : Mapped to the "create" action, creates a new object
+	 *
+	 * PUT
+	 * : Mapped to the "update" action, update an existing object
+	 *
+	 * DELETE
+	 * : Mapped to the "delete" action, delete an existing object
+	 *
+	 * Additional methods can be supported by adding the method and action to
+	 * the `$_action_map` property.
 	 *
 	 * @param Route $route
 	 * @param array $params
 	 * @param Request $request
 	 * @return array
 	 * @throws Kohana_Exception
+	 * @see Aurora_Controller_API
 	 */
 	public static function map_method($route, $params, $request) {
 		// get the method from request
