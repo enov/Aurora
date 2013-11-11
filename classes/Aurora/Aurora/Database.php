@@ -62,20 +62,61 @@ class Aurora_Aurora_Database
 	}
 
 	/**
+	 * Find the prefix (table name + dot) in the keys of the rowsets returned
+	 * from database. Checks if `fetch_table_names` is enabled in DB config.
+	 *
+	 * @param Aurora $aurora
+	 * @return string table name with a dot '.' if `fetch_table_names` is enabled
+	 */
+	public static function prefix_table_dot($aurora) {
+		// prepare variables
+		$table = static::table($aurora);
+		$config = static::config($aurora);
+		// load database config
+		$config = Kohana::$config->load("database")->get($config);
+		// Getting the var
+		$fetch_table_names = Arr::path($config, 'connection.fetch_table_names', FALSE);
+
+		return $fetch_table_names ?
+		  $table . '.' : // table name and a dot
+		  ''; // empty string
+	}
+
+	/**
 	 * Returns the key/index of the id in the database result row
 	 *
 	 * @return string
 	 */
 	public static function row_pkey($aurora) {
 		// prepare variables
-		$table = static::table($aurora);
 		$pkey = static::pkey($aurora);
-		$config = static::config($aurora);
-		// load database config
-		$config = Kohana::$config->load("database")->get($config);
-		// Getting the var
-		$fetch_table_names = Arr::path($config, 'connection.fetch_table_names', FALSE);
-		return $fetch_table_names ? $table . '.' . $pkey : $pkey;
+		// return
+		return static::prefix_table_dot($aurora) . $pkey;
+	}
+
+	/**
+	 * Helper function to extract a subset of a row
+	 * It helps to get the row for a specific model
+	 *
+	 * @param array $row
+	 * @param string $db_table_search
+	 * @param string $db_table_replace
+	 * @param boolean $unset
+	 * @return array
+	 */
+	public function extract_row(array $row, $db_table_search, $db_table_replace = '', $unset = FALSE) {
+		$db_table_replace = $db_table_replace ? : static::db_table();
+		$pattern = "/^" . $db_table_search . "\./";
+		$db_row = array();
+		foreach ($row as $key => $value) {
+			if (preg_match($pattern, $key)) {
+				$db_row[preg_replace($pattern, $db_table_replace . '.', $key)] = $value;
+				if ($unset) {
+					unset($row[$key]);
+				}
+			}
+		}
+		return $db_row;
 	}
 
 	/**
