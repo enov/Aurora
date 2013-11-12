@@ -13,6 +13,14 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Aurora_Aurora_Core
 {
+	// Release version and codename
+	const VERSION  = '1.1-beta';
+	const CODENAME = 'mighty-math-powers';
+	/**
+	 * Compatibility with Kohana version
+	 * Comma separated list of versions
+	 */
+	const KOMPATIBILITY = '3.3';
 
 	/**
 	 * Aurora custom auto-loader
