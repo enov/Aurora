@@ -176,7 +176,7 @@ class Aurora_Aurora_Database
 				else if (
 				  (is_array($value)) AND
 				  ($value === array_filter($value, "is_scalar")) AND
-				  (array_keys($value) === array_filter(array_keys($param), 'is_int'))
+				  (array_keys($value) === array_filter(array_keys($value), 'is_int'))
 				)
 					$query = $query->where($table . '.' . $column, 'IN', $value);
 				else if (is_callable($value))
