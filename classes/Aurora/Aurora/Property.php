@@ -187,6 +187,43 @@ class Aurora_Aurora_Property
 	public static function set_pkey($model, $value, $force = TRUE) {
 		$au = Aurora_Type::aurora($model);
 		$pkey = Aurora_Database::pkey($au);
+
+		$properties = static::setters($model);
+		if (array_key_exists($pkey, $properties)) {
+
+			// test for type of setter
+			if ($properties[$pkey]['type'] === 'property') {
+				return $model->$pkey = $value;
+			} else { //if ($properties[$property][$type] === 'method')
+				$method = 'set_' . $pkey;
+				return $model->$method($value);
+			}
+		} else if ($force) {
+			// ---- PS: if you want for the protected setter method
+			// ---- to take precedence over the protected property
+			// ---- just refactor that protected property $id to $_id
+			// Test if a protected ID field exists
+			if (property_exists($model, $pkey)) {
+				$property = new ReflectionProperty(Aurora_Type::classname($model), $pkey);
+				$property->setAccessible(TRUE);
+				return $property->setValue($model, $value);
+			} else
+			// Test if a private/protected setter for the ID exists
+			if (method_exists($model, $setter = 'set_' . $pkey)) {
+				$method = new ReflectionMethod(Aurora_Type::classname($model), $setter);
+				$method->setAccessible(TRUE);
+				return $method->invokeArgs($model, array($value));
+			}
+		}
+		// Man, where's your ID?
+		throw $e;
+	}
+	/**
+	 * old version of the above function
+	 */
+	public static function old_set_pkey($model, $value, $force = TRUE) {
+		$au = Aurora_Type::aurora($model);
+		$pkey = Aurora_Database::pkey($au);
 		try {
 			return static::set($model, $pkey, $value);
 		} catch (Exception $e) {
@@ -211,5 +248,4 @@ class Aurora_Aurora_Property
 		// Man, where's your ID?
 		throw $e;
 	}
-
 }
