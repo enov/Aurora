@@ -41,7 +41,7 @@ trait Trait_Aurora_Data_Map
 	protected function map_retrieve($model, $row, array $props) {
 		$tbldot = Au::db()->prefix_table_dot($this);
 		foreach ($props as $prop) {
-			if (in_array($prop, get_object_vars($model))) {
+			if (in_array($prop, get_object_vars($model), TRUE)) {
 				$model->$prop = $row[$tbldot . $prop];
 			} else {
 				$setter = 'set_' . $prop;
