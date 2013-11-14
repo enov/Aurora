@@ -219,9 +219,10 @@ class Aurora_Aurora_Property
 		throw $e;
 	}
 	/**
-	 * old version of the above function
+	 * old version of the above function.
+	 * Will keep it handy here to test and benchmark.
 	 */
-	public static function old_set_pkey($model, $value, $force = TRUE) {
+	public static function _old_set_pkey($model, $value, $force = TRUE) {
 		$au = Aurora_Type::aurora($model);
 		$pkey = Aurora_Database::pkey($au);
 		try {
