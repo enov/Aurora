@@ -185,7 +185,7 @@ class Aurora_Aurora_Property
 	 * @return int/mixed
 	 */
 	public static function set_pkey($model, $value, $force = TRUE) {
-		$au = Aurora_Type::aurora($model);
+		$au = Aurora_Core::factory($model);
 		$pkey = Aurora_Database::pkey($au);
 
 		$properties = static::setters($model);
@@ -221,6 +221,8 @@ class Aurora_Aurora_Property
 	/**
 	 * old version of the above function.
 	 * Will keep it handy here to test and benchmark.
+	 * This implementation seems to be slow because it relies on static::set
+	 * and !!! catches the exception !!! before forcing
 	 */
 	public static function _old_set_pkey($model, $value, $force = TRUE) {
 		$au = Aurora_Type::aurora($model);
