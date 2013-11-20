@@ -13,6 +13,7 @@ defined('SYSPATH') or die('No direct script access.');
  */
 trait Trait_Aurora_Data_Map
 {
+
 	/**
 	 * Strait-forward columns-to-properties mapping.
 	 *
@@ -39,21 +40,37 @@ trait Trait_Aurora_Data_Map
 	 * @return void
 	 */
 	protected function map_retrieve($model, $row, array $props) {
-		$this->prefix_table_dot =
-		  isset($this->prefix_table_dot) ?
+		$this->prefix_table_dot = isset($this->prefix_table_dot) ?
 		  $this->prefix_table_dot :
 		  Au::db()->prefix_table_dot($this);
 		$tbldot = $this->prefix_table_dot;
 		foreach ($props as $prop) {
+			// *************************
+			// *** Implementation #1 ***
+			// *************************
+			// this is a ~50% faster implemenation than #2 below
+			// but does not take care of ID being usually protected
+			// it's better used when Aurora extends the Model
 			if (in_array($prop, get_object_vars($model), TRUE)) {
 				$model->$prop = $row[$tbldot . $prop];
 			} else {
 				$setter = 'set_' . $prop;
 				$model->$setter($row[$tbldot . $prop]);
 			}
+			continue; // stops here, Implementation #2 unreachable
+			// *************************
+			// *** Implementation #2 ***
+			// *************************
+			// set property values through Aurora_Property
+			if ($prop === Au::db()->pkey($this)) {
+				Au::prop()->set_pkey($model, $row[$tbldot . $prop]);
+			} else {
+				Au::prop()->set($model, $prop, $row[$tbldot . $prop]);
+			}
 		}
 		return;
 	}
+
 	/**
 	 * Strait forward properties-to-columns mappings
 	 *
@@ -86,4 +103,5 @@ trait Trait_Aurora_Data_Map
 		}
 		return $arr_map;
 	}
+
 }
