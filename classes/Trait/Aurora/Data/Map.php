@@ -39,7 +39,11 @@ trait Trait_Aurora_Data_Map
 	 * @return void
 	 */
 	protected function map_retrieve($model, $row, array $props) {
-		$tbldot = Au::db()->prefix_table_dot($this);
+		$this->prefix_table_dot =
+		  isset($this->prefix_table_dot) ?
+		  $this->prefix_table_dot :
+		  Au::db()->prefix_table_dot($this);
+		$tbldot = $this->prefix_table_dot;
 		foreach ($props as $prop) {
 			if (in_array($prop, get_object_vars($model), TRUE)) {
 				$model->$prop = $row[$tbldot . $prop];
