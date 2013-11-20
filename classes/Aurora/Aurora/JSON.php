@@ -113,23 +113,28 @@ class Aurora_Aurora_JSON
 		foreach ($props as $prop => $arrProp) {
 			// get the value
 			$value = Aurora_Property::get($model, $prop);
+			// test if value is scalar or NULL, thus json_encode-able
+			if (is_scalar($value) OR is_null($value)) {
+				$std->$prop = $value;
+			}
+			// Special care for DateTime. Is this generally acceptable?
+			else if ($value instanceof DateTime) {
+				$std->$prop = $value->format(DATE_ISO8601);
+			}
+			// if $value is JsonSerializable
+			else if ($value instanceof JsonSerializable) {
+				$std->$prop = $value->jsonSerialize();
+			}
 			// if $value is a Model
-			if (Aurora_Type::is_model($value)) {
+			else if (Aurora_Type::is_model($value)) {
 				$std->$prop = static::from_model($value, $aurora);
 			}
 			// if $value is a Collection
 			else if (Aurora_Type::is_collection($value)) {
 				$std->$prop = static::from_collection($value, $aurora);
 			}
-			// if $value is JsonSerializable
-			else if ($value instanceof JsonSerializable) {
-				$std->$prop = $value->jsonSerialize();
-			}
-			// Special care for DateTime. Is this generally acceptable?
-			else if ($value instanceof DateTime) {
-				$std->$prop = $value->format(DATE_ISO8601);
-			}
-			// if scalar?
+			// now what?
+			// if anything else just hope it will be json_encode-able!
 			else {
 				$std->$prop = $value;
 			}
