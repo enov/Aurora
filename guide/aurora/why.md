@@ -40,8 +40,8 @@ domain Models and the choice to map freely your model properties to the database
 - Aurora means more code. If you like database-centric, Auto-modeler ORM, and
 the speed it gives you to write an application, then Aurora is NOT for you.
 
-- ~~Loading and JSON encoding of hundreds of thousands deeply nested models,
+- <s>Loading and JSON encoding of hundreds of thousands deeply nested models,
 may not be of good performance, specially in older versions of PHP (5.3).
 Customizing JSON encodings (Interface_Aurora_JSON_serialize/deserialize),
-using caching techniques might be of good help.~~ JSON encoding is much better
+using caching techniques might be of good help.</s> JSON encoding is much better
 now with the latest commits (labeled *performance*).
