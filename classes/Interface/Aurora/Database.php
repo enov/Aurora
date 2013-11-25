@@ -3,7 +3,7 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Manual ORM interface. Those methods are called
+ * Manual data mapping interface. Those methods are called
  * on database read and write. "Aurora_" classes should
  * implement this.
  *

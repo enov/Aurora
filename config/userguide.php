@@ -12,7 +12,7 @@ return array(
 			// The name that should show up on the userguide index page
 			'name' => 'Aurora',
 			// A short description of this module, shown on the index page
-			'description' => 'Manual ORM, JSON and REST module for Kohana 3.x',
+			'description' => 'Manual data mapping, JSON and REST module for Kohana 3.x',
 			// Copyright message, shown in the footer for this module
 			'copyright' => 'Samuel Demirdjian',
 		)
