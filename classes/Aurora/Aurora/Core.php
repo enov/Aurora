@@ -13,8 +13,9 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Aurora_Aurora_Core
 {
+
 	// Release version and codename
-	const VERSION  = '1.1-beta';
+	const VERSION = '1.1-beta';
 	const CODENAME = 'mighty-math-powers';
 	/**
 	 * Compatibility with Kohana version
@@ -175,10 +176,6 @@ class Aurora_Aurora_Core
 			$rowset = Aurora_Database::select($au, $params);
 			$count = count($rowset);
 
-			if (empty($mode)) {
-				$mode = ($count == 1) ? 'model' : 'collection';
-			}
-
 			if ($mode == 'model') {
 				if (!$count)
 				// should we Aurora_Hook::call($au, 'after_load', FALSE)? if no result?
@@ -223,15 +220,14 @@ class Aurora_Aurora_Core
 	 * @return mixed 'model', 'collection', FALSE
 	 */
 	protected static function find_mode($object, $params) {
-		$mode = NULL;
-		if (is_null($params))
-			$mode = 'collection';
-		if (is_scalar($params))
+		// by default one should expect a collection (many models) just like
+		// when selecting from database, one expects a rowset (many rows)
+		$mode = 'collection';
+		// if the parameter is scalar load('Event', 1)
+		// or if we are force-requesting a model
+		if ((is_scalar($params)) OR (Aurora_Type::is_model($object, TRUE)))
 			$mode = 'model';
-		if (Aurora_Type::is_model($object))
-			$mode = 'model';
-		if (Aurora_Type::is_collection($object))
-			$mode = 'collection';
+		// return
 		return $mode;
 	}
 
