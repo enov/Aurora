@@ -22,7 +22,6 @@ class Aurora_Aurora_Core
 	 * Comma separated list of versions
 	 */
 	const KOMPATIBILITY = '3.3';
-
 	/**
 	 * Aurora custom auto-loader
 	 *
@@ -47,7 +46,6 @@ class Aurora_Aurora_Core
 		// Call standard Kohana auto-loading mechanism
 		Kohana::auto_load($class);
 	}
-
 	/**
 	 * JSON encode a Model or a Collection
 	 *
@@ -75,7 +73,6 @@ class Aurora_Aurora_Core
 		// return
 		return $json_str;
 	}
-
 	/**
 	 * JSON decode a JSON string into a Model or a Collection
 	 *
@@ -103,7 +100,6 @@ class Aurora_Aurora_Core
 		// return
 		return $result;
 	}
-
 	/**
 	 * Check if your Model is new.
 	 * A new Model is not loaded from the database and does not have an ID
@@ -119,7 +115,6 @@ class Aurora_Aurora_Core
 			throw new Kohana_Exception('Tested $model is not a Model.');
 		return !Aurora_Property::get_pkey($model);
 	}
-
 	/**
 	 * Check if your Model is loaded.
 	 * A loaded Model has an ID
@@ -135,7 +130,6 @@ class Aurora_Aurora_Core
 			throw new Kohana_Exception('Tested $model is not a Model.');
 		return (bool) Aurora_Property::get_pkey($model);
 	}
-
 	/**
 	 * Factory method to create Models or
 	 * Collections from the common_name
@@ -150,7 +144,6 @@ class Aurora_Aurora_Core
 		$classname = Aurora_Type::$type($classname);
 		return new $classname();
 	}
-
 	/**
 	 * Load a model or collection from database
 	 * using Aurora
@@ -210,7 +203,54 @@ class Aurora_Aurora_Core
 		// return
 		return $result;
 	}
+	public static function load_experimental($object, $params = NULL) {
+		// start profiling
+		$benchmark = Aurora_Profiler::start($object, __FUNCTION__);
 
+		try {
+
+			// Get the Aurora_ class for this object
+			$au = Aurora_Type::is_aurora($object) ? $object : static::factory($object, 'aurora');
+			// find out mode:
+			$mode = static::find_mode($object, $params);
+			// run before hook if exists
+			Aurora_Hook::call($au, 'before_load', $params);
+			// Run select query
+			$rowset = Aurora_Database::select($au, $params);
+			$count = count($rowset);
+
+			if ($mode == 'model') {
+				if (!$count)
+				// should we Aurora_Hook::call($au, 'after_load', FALSE)? if no result?
+					return false;
+				$model = Aurora_Type::is_model($object) ? $object : static::factory($object, 'model');
+				$au->db_retrieve($model, $rowset[0]);
+				$result = $model;
+			} else {
+				/* @var $collection Aurora_Collection */
+				$collection = Aurora_Type::is_collection($object) ? $object : static::factory($object, 'collection');
+				$model_name = Aurora_Type::model($object);
+				$array = & $collection->to_array();
+				$row_pkey = Aurora_Database::row_pkey($au);
+				foreach ($rowset as $model) {
+					$pkey = $model->get_id();
+					$array[$pkey] = $model;
+				}
+				$result = $collection;
+			}
+			// run after hook if exists
+			Aurora_Hook::call($au, 'after_load', $result);
+		} catch (Exception $e) {
+			Aurora_Profiler::delete($benchmark);
+			throw $e;
+		}
+
+		// end profiling
+		Aurora_Profiler::stop($benchmark);
+
+		// return
+		return $result;
+	}
 	/**
 	 * helper class for load function in order to find out
 	 * whether to return model or collection
@@ -230,7 +270,6 @@ class Aurora_Aurora_Core
 		// return
 		return $mode;
 	}
-
 	/**
 	 * Save a model or a collection to the database
 	 * using Aurora
@@ -276,7 +315,6 @@ class Aurora_Aurora_Core
 		// return
 		return $object;
 	}
-
 	protected static function _save($model, $aurora) {
 		return
 		  // test if the model is new
@@ -286,7 +324,6 @@ class Aurora_Aurora_Core
 		  // if it has an ID update model in database
 		  static::update($model, $aurora);
 	}
-
 	/**
 	 * Delete a model or a collection from the database
 	 * using Aurora
@@ -335,7 +372,6 @@ class Aurora_Aurora_Core
 		// return result
 		return $result;
 	}
-
 	protected static function _delete($model) {
 		// Test if $model is_new and throw exception if TRUE
 		if (static::is_new($model))
@@ -343,7 +379,6 @@ class Aurora_Aurora_Core
 		// Get the value $pk (the ID) of the $model
 		return Aurora_Property::get_pkey($model);
 	}
-
 	/**
 	 * Inserts a model to the database
 	 *
@@ -366,7 +401,6 @@ class Aurora_Aurora_Core
 		// return $model
 		return $model;
 	}
-
 	/**
 	 * Updates a model in the database
 	 *
@@ -387,5 +421,4 @@ class Aurora_Aurora_Core
 		// return $model
 		return $model;
 	}
-
 }

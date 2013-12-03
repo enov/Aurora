@@ -145,6 +145,13 @@ class Aurora_Aurora_Database
 		// execute
 		return $query->execute($config);
 	}
+	public static function select_experimental($aurora, $param) {
+		$config = static::config($aurora);
+		// prepare variables
+		$query = static::build_query($aurora, $param);
+		// execute
+		return $query->execute($config, Aurora_Type::model($aurora));
+	}
 
 	protected static function build_query($aurora, $param) {
 		$table = static::table($aurora);

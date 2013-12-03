@@ -55,7 +55,7 @@ abstract class Aurora_Collection implements Countable,
 	 */
 	public function get($id) {
 		if (empty($this->_pkey_property))
-			$this->_pkey_property = Aurora_Property::pkey_property($this->modelclass());
+			$this->_pkey_property = $this->pkey_property();
 		// to speed up "getting" the model, test if the model at offset $id
 		// is the one we are looking for
 		if (array_key_exists($id, $this->_collection)) {
@@ -110,6 +110,10 @@ abstract class Aurora_Collection implements Countable,
 		return isset($model);
 	}
 
+	public function contains($model) {
+		$pk = Aurora_Property::get_pkey($model);
+		return $this->exists($pk);
+	}
 	/**
 	 * Return count of items in collection
 	 * Implements countable
@@ -129,6 +133,15 @@ abstract class Aurora_Collection implements Countable,
 		return $this->_modelclass;
 	}
 
+	/**
+	 * Get the property name of the primary key of the Model
+	 * @return string property name, `id` most of the time
+	 */
+	public function pkey_property() {
+		if (empty($this->_pkey_property))
+			$this->_pkey_property = Aurora_Property::pkey_property($this->modelclass());
+		return $this->_pkey_property;
+	}
 	/**
 	 * Determine if this value can be added to this collection
 	 * @param string $value
@@ -220,6 +233,20 @@ abstract class Aurora_Collection implements Countable,
 	 */
 	public function &to_array() {
 		return $this->_collection;
+	}
+
+	/**
+	 *
+	 * @return array
+	 */
+	public function get_pk_array() {
+		if (empty($this->_pkey_property))
+			$this->_pkey_property = $this->pkey_property();
+		$arr = array();
+		foreach ($this->_collection as $m) {
+			$arr[] = $m->{$this->_pkey_property};
+		}
+		return $arr;
 	}
 
 }
