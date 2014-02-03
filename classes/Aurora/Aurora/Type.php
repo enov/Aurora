@@ -115,12 +115,16 @@ class Aurora_Aurora_Type
 	 */
 	public static function is_aurora($object, $classname_only = false) {
 		$pattern = '/^Aurora_/';
-		if ($classname_only)
+		if ($classname_only) {
 			return (bool) preg_match($pattern, static::classname($object));
-		else
+		} else {
 			return
 			  preg_match($pattern, static::classname($object)) AND
-			  $object instanceof Interface_Aurora_Database;
+			  (
+			  $object instanceof Interface_Aurora_Database_Persist OR
+			  $object instanceof Interface_Aurora_Database_Retrieve
+			  );
+		}
 	}
 
 	/**
