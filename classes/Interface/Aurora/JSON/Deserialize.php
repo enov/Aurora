@@ -12,7 +12,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @license http://enov.mit-license.org MIT
  *
  */
-interface Interface_Aurora_JSON_Deserialize
+interface Interface_Aurora_JSON_Deserialize extends Interface_Aurora
 {
 
 	/**
