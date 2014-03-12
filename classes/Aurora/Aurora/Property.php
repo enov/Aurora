@@ -15,6 +15,13 @@ defined('SYSPATH') or die('No direct script access.');
 class Aurora_Aurora_Property
 {
 
+	protected $object;
+
+	public function __construct($object)
+	{
+		$this->object;
+	}
+
 	protected static $cache_prop;
 	protected static $cache_pkey;
 
@@ -26,7 +33,7 @@ class Aurora_Aurora_Property
 	 * @param Model $model
 	 * @return array Returns an array of array('type' => 'property', 'name' => 'address')
 	 */
-	public static function getters($model) {
+	public function getters($model) {
 		return static::properties($model, 'get');
 	}
 
@@ -38,11 +45,11 @@ class Aurora_Aurora_Property
 	 * @param Model $model
 	 * @return array Returns an array of array('type' => 'property', 'name' => 'address')
 	 */
-	public static function setters($model) {
+	public function setters($model) {
 		return static::properties($model, 'set');
 	}
 
-	protected static function properties($model, $dir) {
+	protected function properties($dir) {
 		if ($dir != 'get' AND $dir != 'set')
 			throw new Kohana_Exception('direction should be either set or get');
 		// get the classname of the model
