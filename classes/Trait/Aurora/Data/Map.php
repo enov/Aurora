@@ -68,7 +68,7 @@ trait Trait_Aurora_Data_Map
 				Au::prop()->set($model, $prop, $row[$tbldot . $prop]);
 			}
 		}
-		return;
+		return $model;
 	}
 
 	/**
