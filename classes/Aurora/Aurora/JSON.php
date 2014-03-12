@@ -8,7 +8,7 @@ defined('SYSPATH') or die('No direct script access.');
  *
  * Note that the words "serialize" and "deserialize" in Aurora, is in context
  * of JSON, and has nothing to do with string conversion for storage. It rather
- * means to convert to and from and object that is JSON encodable.
+ * means to convert to, and from, *an object* (stdClass) that is JSON encodable.
  *
  * @package Aurora
  * @author Samuel Demirdjian
@@ -186,11 +186,50 @@ class Aurora_Aurora_JSON
 					$value = static::to_model($value, $typehint, $aurora);
 				} else if ($typehint === 'DateTime') {
 					$value = new DateTime($value);
+				} elseif ($typehint !== NULL) {
+					// json_decode to stdClass
+					$value = json_decode($value);
+					// cast stdClass to the typehinted class
+					$value = static::cast($typehint, $value);
 				}
 			}
 			Aurora_Property::set($model, $prop, $value);
 		}
 		return $model;
+	}
+
+	/**
+	 * Class casting
+	 *
+	 * @param string|object $destination
+	 * @param object $sourceObject
+	 * @return object
+	 */
+	public static function cast($destination, $sourceObject)
+	{
+		if (is_string($destination))
+		{
+			$destination = new $destination();
+		}
+		$sourceReflection = new ReflectionObject($sourceObject);
+		$destinationReflection = new ReflectionObject($destination);
+		$sourceProperties = $sourceReflection->getProperties();
+		foreach ($sourceProperties as $sourceProperty) {
+			$sourceProperty->setAccessible(true);
+			$name = $sourceProperty->getName();
+			$value = $sourceProperty->getValue($sourceObject);
+			if ($destinationReflection->hasProperty($name))
+			{
+				$propDest = $destinationReflection->getProperty($name);
+				$propDest->setAccessible(true);
+				$propDest->setValue($destination, $value);
+			}
+			else
+			{
+				$destination->$name = $value;
+			}
+		}
+		return $destination;
 	}
 
 	/**
