@@ -7,7 +7,7 @@ A Kohana module to manually map models to database and expose a REST-like interf
 
 Version
 --------
-Aurora 1.1-beta for Kohana 3.3, code-named "mighty-math-powers".
+Aurora 2.0-alpha for Kohana 3.3, code-named "mighty-math-powers".
 
 
 Description
