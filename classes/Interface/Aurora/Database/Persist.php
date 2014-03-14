@@ -14,7 +14,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @license http://enov.mit-license.org MIT
  *
  */
-interface Interface_Aurora_Database_Persist
+interface Interface_Aurora_Database_Persist extends Interface_Aurora
 {
 
 	/**

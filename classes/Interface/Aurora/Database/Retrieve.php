@@ -14,7 +14,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @license http://enov.mit-license.org MIT
  *
  */
-interface Interface_Aurora_Database_Retrieve
+interface Interface_Aurora_Database_Retrieve extends Interface_Aurora
 {
 
 	public function db_retrieve($model, array $row);
