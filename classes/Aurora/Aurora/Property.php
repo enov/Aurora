@@ -58,9 +58,11 @@ class Aurora_Aurora_Property
 			$property = preg_replace($pattern, '', $method, 1, $count);
 			// if preg_replace successful, this is a getter/setter method
 			if ($count) {
+				$typehint = ($dir === 'set') ? Aurora_Reflection::typehint($classname, $method) : NULL;
 				$properties[$property] = array(
 					'type' => 'method',
 					'name' => $property,
+					'hint' => $typehint,
 				);
 			}
 		}
@@ -69,6 +71,7 @@ class Aurora_Aurora_Property
 			$properties[$property] = array(
 				'type' => 'property',
 				'name' => $property,
+				'hint' => NULL,
 			);
 		}
 		// cache and return
