@@ -19,7 +19,7 @@ class Aurora_Aurora_Reflection
 
 	protected static function rflx_class($obj) {
 		$classname = is_string($obj) ? $obj : Aurora_Type::classname($obj);
-		if (key_exists($classname, static::$rflx_cache))
+		if (isset(static::$rflx_cache[$classname]))
 			return static::$rflx_cache[$classname];
 		else
 			return static::$rflx_cache[$classname] = new ReflectionClass($obj);
@@ -39,6 +39,23 @@ class Aurora_Aurora_Reflection
 		$parameters = $rflx_method->getParameters();
 		$param = $parameters[0];
 		return is_null($param->getClass()) ? NULL : $param->getClass()->getName();
+	}
+
+	/**
+	 * Get the typehint of the first parameter
+	 * for the specified method
+	 *
+	 * @param string $class
+	 * @param string $method
+	 * @return mixed the name of the class
+	 */
+	public static function constructor_has_parameter($class) {
+		$rflx_class = static::rflx_class($class);
+		$rflx_method = $rflx_class->getConstructor();
+		$parameters = $rflx_method->getParameters();
+		if (empty($parameters))
+			return FALSE;
+		return TRUE;
 	}
 
 }
