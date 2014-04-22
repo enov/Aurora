@@ -392,9 +392,13 @@ class Aurora_Aurora_Core
 		$row = $aurora->db_persist($model);
 		// Run the insert query
 		$result = Aurora_Database::insert($aurora, $row);
+		// todo: should I test if $result is array?
 		if ($result) {
 			$inserted_id = $result[0];
-			Aurora_Property::set_pkey($model, $inserted_id);
+			$affected_rows = $result[1];
+			if ($affected_rows AND $inserted_id) {
+				Aurora_Property::set_pkey($model, $inserted_id);
+			}
 		}
 		// run after hook if exists
 		Aurora_Hook::call($aurora, 'after_create', $model);
