@@ -39,6 +39,8 @@ class Aurora_Controller_API extends Controller
 	public function action_create() {
 		$cname = $this->cname();
 		$m = Au::json_decode($this->request->body(), $cname);
+		if (Au::is_loaded($m))
+			throw new HTTP_Exception_500("Model should be new.");
 		Au::save($m);
 		$json_str = Au::json_encode($m);
 		$this->response->body($json_str);
@@ -47,6 +49,8 @@ class Aurora_Controller_API extends Controller
 	public function action_update() {
 		$cname = $this->cname();
 		$m = Au::json_decode($this->request->body(), $cname);
+		if (Au::is_new($m))
+			throw new HTTP_Exception_500("Model should be loaded.");
 		Au::save($m);
 		$json_str = Au::json_encode($m);
 		$this->response->body($json_str);
