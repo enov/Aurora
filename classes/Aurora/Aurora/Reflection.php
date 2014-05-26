@@ -51,10 +51,15 @@ class Aurora_Aurora_Reflection
 	 */
 	public static function constructor_has_parameter($class) {
 		$rflx_class = static::rflx_class($class);
+		// get constructor
 		$rflx_method = $rflx_class->getConstructor();
+		if (empty($rflx_method))
+			return FALSE;
+		// get parameters
 		$parameters = $rflx_method->getParameters();
 		if (empty($parameters))
 			return FALSE;
+		// return TRUE
 		return TRUE;
 	}
 
