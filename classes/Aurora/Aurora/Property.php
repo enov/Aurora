@@ -254,4 +254,16 @@ class Aurora_Aurora_Property
 		// Man, where's your ID?
 		throw $e;
 	}
+	/**
+	 *
+	 * @param mixed $object
+	 * @param string $property
+	 * @return type
+	 */
+	public function &ref($object, $property) {
+		$value = & Closure::bind(function & () use ($property) {
+			  return $this->$property;
+		  }, $object, $object)->__invoke();
+		return $value;
+	}
 }
