@@ -242,9 +242,15 @@ abstract class Aurora_Collection implements Countable,
 	public function get_pk_array() {
 		if (empty($this->_pkey_property))
 			$this->_pkey_property = $this->pkey_property();
+		$pkey_prop = $this->_pkey_property['name'];
+		$pkey_method = 'get_' . $this->_pkey_property['name'];
 		$arr = array();
 		foreach ($this->_collection as $m) {
-			$arr[] = $m->{$this->_pkey_property};
+			if ($this->_pkey_property['type'] == 'property') {
+				$arr[] = $m->$pkey_prop;
+			} else {
+				$arr[] = $m->$pkey_method();
+			}
 		}
 		return $arr;
 	}
