@@ -48,6 +48,12 @@ class Aurora_Database_PDO extends Kohana_Database_PDO
 		// Force PDO to use exceptions for all errors
 		$attrs = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION);
 
+		// Force PDO to disable server-side prepared statements
+		$attrs[PDO::ATTR_EMULATE_PREPARES] = FALSE;
+
+		// Force PDO not to stringify fetches
+		$attrs[PDO::ATTR_STRINGIFY_FETCHES] = FALSE;
+
 		if (!empty($persistent)) {
 			// Make the connection persistent
 			$attrs[PDO::ATTR_PERSISTENT] = TRUE;
